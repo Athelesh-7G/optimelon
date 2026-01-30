@@ -284,9 +284,15 @@
     }
   }
   
+  /* Respect reduced motion preferences */
   @media (prefers-reduced-motion: reduce) {
-    .message-user, .message-assistant {
-      animation: none;
+    .message-user, .message-assistant,
+    [style*="animation: messageEnter"] {
+      animation: none !important;
+    }
+    
+    .animate-bounce, .animate-spin, .animate-pulse {
+      animation: none !important;
     }
   }
 }

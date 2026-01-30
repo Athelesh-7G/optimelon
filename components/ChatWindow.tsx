@@ -394,13 +394,16 @@ export function ChatWindow() {
                   </div>
                   <div className="border rounded-2xl px-4 py-3 shadow-sm" style={{ background: 'rgba(26, 26, 31, 0.4)', borderColor: 'rgba(255, 255, 255, 0.05)' }}>
                     <div className="flex items-center gap-2">
-                      <span style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Thinking</span>
-                      <span className="flex gap-1">
+                      <span style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Generating response</span>
+                      <span className="flex gap-1" aria-hidden="true">
                         <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: 'var(--melon-coral)', animationDelay: "0ms" }} />
                         <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: 'var(--melon-coral)', animationDelay: "150ms" }} />
                         <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: 'var(--melon-coral)', animationDelay: "300ms" }} />
                       </span>
                     </div>
+                    <p className="text-xs mt-1 hidden sm:block" style={{ color: 'rgba(255, 255, 255, 0.4)' }}>
+                      Press <kbd className="px-1 py-0.5 rounded text-[10px] border" style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)' }}>Esc</kbd> to stop
+                    </p>
                   </div>
                 </div>
               )}
@@ -438,13 +441,15 @@ export function ChatWindow() {
               <Button
                 onClick={handleStop}
                 size="icon"
-                className="h-[52px] w-[52px] rounded-xl transition-all duration-200 border flex-shrink-0"
+                className="h-[52px] w-[52px] rounded-xl transition-all duration-200 border flex-shrink-0 group"
                 style={{
                   background: 'rgba(255, 107, 107, 0.15)',
                   borderColor: 'rgba(255, 107, 107, 0.4)',
                   color: 'var(--melon-red)',
                   animation: 'pulseGlow 2s ease-in-out infinite'
                 }}
+                title="Stop generation (Esc)"
+                aria-label="Stop generation"
               >
                 <Square className="h-4 w-4 fill-current" />
               </Button>

@@ -45,6 +45,7 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
 }
 
 // Parse inline markdown with soft styling - clean rendering without artifacts
+// Safe for streaming: handles incomplete markdown gracefully
 function parseSoftInlineMarkdown(text: string): string {
   // Escape HTML first to prevent XSS
   const escapeHtml = (str: string): string => {
@@ -56,20 +57,24 @@ function parseSoftInlineMarkdown(text: string): string {
   
   let result = escapeHtml(text)
   
-  // Bold - subtle weight, no loud color (match ** on both sides)
-  result = result.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-medium" style="color: rgba(255, 255, 255, 0.92);">$1</strong>')
+  // Bold - only match complete ** pairs (non-greedy, requires closing **)
+  result = result.replace(/\*\*(.+?)\*\*/g, '<strong class="font-medium" style="color: rgba(255, 255, 255, 0.92);">$1</strong>')
   
-  // Italic (single * but not **) - use negative lookbehind/lookahead
-  result = result.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, "<em>$1</em>")
+  // Italic - only match complete single * pairs (not part of **)
+  result = result.replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g, "<em>$1</em>")
   
-  // Inline code - backticks
-  result = result.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>')
+  // Inline code - only match complete backtick pairs
+  result = result.replace(/`([^`]+?)`/g, '<code class="inline-code">$1</code>')
   
-  // Links - [text](url)
+  // Links - only match complete [text](url) patterns
   result = result.replace(
     /\[([^\]]+)\]\(([^)]+)\)/g,
     '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary underline hover:text-primary/80 transition-colors">$1</a>'
   )
+  
+  // Clean up any stray markdown characters that appear at line boundaries during streaming
+  // This removes isolated ** or * that appear at the end (incomplete markdown)
+  result = result.replace(/\*{1,2}$/, '')
   
   return result
 }
