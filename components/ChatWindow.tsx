@@ -370,7 +370,7 @@ export function ChatWindow() {
         {/* Header with glass effect */}
         <header className="flex-shrink-0 border-b px-4 py-3 glass-card relative z-10" style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}>
           <div className="max-w-4xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               {/* Claude-style sidebar toggle */}
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -380,10 +380,12 @@ export function ChatWindow() {
               >
                 <PanelLeft className="h-5 w-5" />
               </button>
-              <span className="text-xl grayscale" role="img" aria-label="watermelon">🍉</span>
-              <h1 className="text-base font-semibold tracking-tight" style={{ color: 'rgba(255, 255, 255, 0.95)' }}>
-                OptiMelon
-              </h1>
+              <div className="flex items-center gap-2.5">
+                <span className="text-xl" role="img" aria-label="watermelon">🍉</span>
+                <h1 className="text-base font-semibold tracking-tight" style={{ color: 'rgba(255, 255, 255, 0.95)' }}>
+                  OptiMelon
+                </h1>
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-md" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
@@ -399,7 +401,7 @@ export function ChatWindow() {
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-[60vh] text-center">
               <div className="relative mb-6">
-                <span className="text-7xl grayscale" role="img" aria-label="watermelon">🍉</span>
+                <span className="text-7xl" role="img" aria-label="watermelon">🍉</span>
                 <Sparkles className="absolute -top-2 -right-2 w-6 h-6 animate-pulse" style={{ color: 'var(--melon-green)' }} />
               </div>
               <h2 className="text-2xl font-bold mb-3" style={{ color: 'rgba(255, 255, 255, 0.95)' }}>
