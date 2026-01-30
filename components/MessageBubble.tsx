@@ -57,9 +57,9 @@ function parseSoftInlineMarkdown(text: string, isUser: boolean = false): string 
   let result = escapeHtml(text)
   
   // Bold - only match complete ** pairs (non-greedy, requires closing **)
-  // Use dark color for user messages, inherit for assistant (theme-aware)
+  // Use white for user messages (on coral bg), inherit for assistant (theme-aware)
   if (isUser) {
-    result = result.replace(/\*\*(.+?)\*\*/g, '<strong class="font-medium" style="color: #1A1A1F;">$1</strong>')
+    result = result.replace(/\*\*(.+?)\*\*/g, '<strong class="font-medium text-white">$1</strong>')
   } else {
     result = result.replace(/\*\*(.+?)\*\*/g, '<strong class="font-medium text-foreground">$1</strong>')
   }
@@ -105,8 +105,7 @@ function renderTextContent(text: string, keyPrefix: string, role: "user" | "assi
       return (
         <p 
           key={stableKey} 
-          className={`${headingStyles[level] ?? headingStyles[1]} ${isUser ? '' : 'text-foreground'}`}
-          style={isUser ? { color: '#1A1A1F' } : undefined}
+          className={`${headingStyles[level] ?? headingStyles[1]} ${isUser ? 'text-white' : 'text-foreground'}`}
         >
           <span dangerouslySetInnerHTML={{ __html: parseSoftInlineMarkdown(block.content, isUser) }} />
         </p>
@@ -119,8 +118,7 @@ function renderTextContent(text: string, keyPrefix: string, role: "user" | "assi
       return (
         <ul 
           key={stableKey} 
-          className={`my-2 space-y-1 pl-5 list-disc ${isUser ? '' : 'text-foreground/80'}`}
-          style={isUser ? { color: '#1A1A1F' } : undefined}
+          className={`my-2 space-y-1 pl-5 list-disc ${isUser ? 'text-white' : 'text-foreground/80'}`}
         >
           {items.map((item, j) => (
             <li key={`${stableKey}-item-${j}`} className="leading-relaxed text-sm">
@@ -137,8 +135,7 @@ function renderTextContent(text: string, keyPrefix: string, role: "user" | "assi
       return (
         <ol 
           key={stableKey} 
-          className={`my-2 space-y-1 pl-5 list-decimal ${isUser ? '' : 'text-foreground/80'}`}
-          style={isUser ? { color: '#1A1A1F' } : undefined}
+          className={`my-2 space-y-1 pl-5 list-decimal ${isUser ? 'text-white' : 'text-foreground/80'}`}
         >
           {items.map((item, j) => (
             <li key={`${stableKey}-item-${j}`} className="leading-relaxed text-sm">
@@ -153,8 +150,7 @@ function renderTextContent(text: string, keyPrefix: string, role: "user" | "assi
     return (
       <p 
         key={stableKey} 
-        className={`mb-3 last:mb-0 leading-relaxed ${isUser ? '' : 'text-foreground/85'}`}
-        style={isUser ? { color: '#1A1A1F' } : undefined}
+        className={`mb-3 last:mb-0 leading-relaxed ${isUser ? 'text-white' : 'text-foreground/85'}`}
       >
         <span dangerouslySetInnerHTML={{ __html: parseSoftInlineMarkdown(block.content, isUser) }} />
       </p>

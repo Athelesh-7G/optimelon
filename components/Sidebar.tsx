@@ -97,7 +97,7 @@ export function Sidebar({
         <div className="p-3">
           <Button
             onClick={handleNewChat}
-            className="w-full melon-gradient hover:opacity-90 transition-all duration-200 text-sm"
+            className="w-full melon-gradient hover:opacity-90 transition-all duration-200 text-sm text-white"
             style={{ boxShadow: "0 2px 6px rgba(255, 107, 107, 0.15)" }}
           >
             <Plus className="h-4 w-4 mr-2" />
