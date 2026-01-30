@@ -404,12 +404,9 @@ export function ChatWindow() {
                 <span className="text-7xl" role="img" aria-label="watermelon">🍉</span>
                 <Sparkles className="absolute -top-2 -right-2 w-6 h-6 animate-pulse" style={{ color: 'var(--melon-green)' }} />
               </div>
-              <h2 className="text-3xl font-bold mb-2 tracking-tight" style={{ color: 'rgba(255, 255, 255, 0.95)' }}>
-                OPTI MELON
+              <h2 className="text-3xl font-bold mb-4 tracking-tight" style={{ color: 'rgba(255, 255, 255, 0.95)' }}>
+                Welcome to OptiMelon
               </h2>
-              <p className="text-lg font-medium mb-4" style={{ color: '#F87171' }}>
-                Ultimate AI Platform
-              </p>
               <p className="max-w-lg mb-5 leading-relaxed text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
                 10+ elite models &bull; Massive context &bull; Max performance
               </p>
@@ -420,10 +417,10 @@ export function ChatWindow() {
                 <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5" style={{ background: 'rgba(248, 113, 113, 0.15)', color: '#F87171' }}>
                   <Pen className="h-3 w-3" /> Creators
                 </span>
-                <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5" style={{ background: 'rgba(248, 113, 113, 0.15)', color: '#F87171' }}>
+                <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5" style={{ background: 'rgba(152, 216, 200, 0.12)', color: 'var(--melon-green)' }}>
                   <Brain className="h-3 w-3" /> Reasoning
                 </span>
-                <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5" style={{ background: 'rgba(152, 216, 200, 0.12)', color: 'var(--melon-green)' }}>
+                <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5" style={{ background: 'rgba(248, 113, 113, 0.15)', color: '#F87171' }}>
                   <Globe className="h-3 w-3" /> Enterprise
                 </span>
               </div>
