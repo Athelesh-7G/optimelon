@@ -218,7 +218,7 @@ export function ChatWindow() {
           </div>
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 border border-border">
-              <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+              <div className="w-2 h-2 rounded-full animate-pulse bg-green-600" />
               <span className="text-sm font-medium text-foreground">{PROVIDER_NAMES[provider]}</span>
               <span className="text-muted-foreground">/</span>
               <span className="font-mono text-sm truncate max-w-[120px] text-muted-foreground">{model.split("/").pop()}</span>
