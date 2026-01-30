@@ -213,7 +213,7 @@ export function ChatWindow() {
               <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 OptiMelon
               </h1>
-              <p className="text-xs text-muted-foreground">High-signal AI assistant</p>
+              <p className="text-xs text-muted-foreground font-mono">{"Configured Best."}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
