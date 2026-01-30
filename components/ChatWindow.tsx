@@ -207,18 +207,18 @@ export function ChatWindow() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20">
                 <span className="text-lg" role="img" aria-label="watermelon">🍉</span>
               </div>
-              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-accent rounded-full border-2 border-background" />
+              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-background text-green-600 bg-green-600" />
             </div>
             <div>
               <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 OptiMelon
               </h1>
-              <p className="text-xs text-muted-foreground">High-signal AI assistant</p>
+              <p className="text-xs text-muted-foreground font-mono">{"Configured Best."}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 border border-border">
-              <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+              <div className="w-2 h-2 rounded-full animate-pulse bg-green-600" />
               <span className="text-sm font-medium text-foreground">{PROVIDER_NAMES[provider]}</span>
               <span className="text-muted-foreground">/</span>
               <span className="font-mono text-sm truncate max-w-[120px] text-muted-foreground">{model.split("/").pop()}</span>
