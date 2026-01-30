@@ -8,7 +8,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { MessageBubble } from "./MessageBubble"
 import { SettingsPanel } from "./SettingsPanel"
 import { Sidebar } from "./Sidebar"
+import { ChatModelSelector } from "./ChatModelSelector"
+import { FileUpload, type UploadedFile } from "./FileUpload"
 import { DEFAULT_SYSTEM_PROMPT, buildMessages } from "@/lib/promptTemplate"
+import { DEFAULT_MODEL_ID, getModelDisplayName } from "@/lib/models"
 import {
   saveMessages,
   loadMessages,
@@ -50,10 +53,11 @@ export function ChatWindow() {
   const [isMobile, setIsMobile] = useState(false)
 
   const [provider, setProvider] = useState<Provider>("bytez")
-  const [model, setModel] = useState("Qwen/Qwen3-8B")
+  const [model, setModel] = useState(DEFAULT_MODEL_ID)
   const [temperature, setTemperature] = useState(0.7)
   const [streaming, setStreaming] = useState(true)
   const [systemPrompt, setSystemPrompt] = useState<string | null>(DEFAULT_SYSTEM_PROMPT)
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -112,17 +116,32 @@ export function ChatWindow() {
   }, [])
 
   const sendMessage = useCallback(async () => {
-    if (!input.trim() || isLoading) return
+    if ((!input.trim() && uploadedFiles.length === 0) || isLoading) return
+
+    // Build message content including file info
+    let messageContent = input.trim()
+    if (uploadedFiles.length > 0) {
+      const fileDescriptions = uploadedFiles.map((f) => {
+        if (f.type.startsWith("image/")) {
+          return `[Image: ${f.name}]`
+        }
+        return `[File: ${f.name} (${f.type})]`
+      }).join("\n")
+      messageContent = messageContent
+        ? `${messageContent}\n\nAttached files:\n${fileDescriptions}`
+        : `Attached files:\n${fileDescriptions}`
+    }
 
     const userMessage: StoredMessage = {
       id: crypto.randomUUID(),
       role: "user",
-      content: input.trim(),
+      content: messageContent,
       timestamp: Date.now(),
     }
 
     setMessages((prev) => [...prev, userMessage])
     setInput("")
+    setUploadedFiles([]) // Clear files after sending
     setError(null)
     setIsLoading(true)
 
@@ -225,7 +244,7 @@ export function ChatWindow() {
       setIsLoading(false)
       abortControllerRef.current = null
     }
-  }, [input, messages, provider, model, temperature, streaming, systemPrompt, isLoading])
+  }, [input, messages, provider, model, temperature, streaming, systemPrompt, isLoading, uploadedFiles])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -370,7 +389,7 @@ export function ChatWindow() {
             </div>
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-md" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
-                <span className="text-xs font-mono truncate max-w-[140px]" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>{model.split("/").pop()}</span>
+                <span className="text-xs font-mono truncate max-w-[140px]" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>{getModelDisplayName(model)}</span>
               </div>
             </div>
           </div>
@@ -390,13 +409,28 @@ export function ChatWindow() {
               <h2 className="text-2xl font-bold mb-3" style={{ color: 'rgba(255, 255, 255, 0.95)' }}>
                 Welcome to OptiMelon
               </h2>
-              <p className="max-w-md mb-8 leading-relaxed" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                A clean, high-signal LLM wrapper that adapts to your needs. 
-                Coding assistance, productivity help, or study guidance - all in one place.
+              <p className="max-w-lg mb-4 leading-relaxed" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                Harness the full power of open-source AI models across multiple providers.
+                From coding and reasoning to document analysis and creative tasks.
+              </p>
+              <div className="flex flex-wrap justify-center gap-2 mb-6 max-w-md">
+                <span className="px-2.5 py-1 rounded-full text-xs font-medium" style={{ background: 'rgba(152, 216, 200, 0.15)', color: 'var(--melon-green)' }}>
+                  10+ Models
+                </span>
+                <span className="px-2.5 py-1 rounded-full text-xs font-medium" style={{ background: 'rgba(255, 107, 107, 0.15)', color: 'var(--melon-coral)' }}>
+                  Up to 1M Context
+                </span>
+                <span className="px-2.5 py-1 rounded-full text-xs font-medium" style={{ background: 'rgba(255, 179, 179, 0.15)', color: 'var(--melon-pink)' }}>
+                  File Uploads
+                </span>
+              </div>
+              <p className="text-xs mb-6 max-w-sm" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
+                Select your model below, attach files, and start chatting. Each model is optimized for specific tasks - click the info icon to see specs.
               </p>
               <div className="flex flex-wrap justify-center gap-3">
                 {[
                   { text: "Help me code", icon: "💻" },
+                  { text: "Analyze a document", icon: "📄" },
                   { text: "Explain a concept", icon: "📚" },
                   { text: "Draft an email", icon: "✉️" },
                 ].map((suggestion) => (
@@ -464,6 +498,17 @@ export function ChatWindow() {
       {/* Input area */}
       <footer className="flex-shrink-0 border-t px-4 py-3 sticky bottom-0" style={{ borderColor: 'rgba(255, 255, 255, 0.08)', background: 'rgba(26, 26, 31, 0.6)', backdropFilter: 'blur(24px) saturate(180%)' }}>
         <div className="max-w-4xl mx-auto">
+          {/* File previews above input */}
+          {uploadedFiles.length > 0 && (
+            <div className="mb-2">
+              <FileUpload
+                files={uploadedFiles}
+                onFilesChange={setUploadedFiles}
+                disabled={isLoading}
+              />
+            </div>
+          )}
+          
           <div className="flex gap-2.5 items-end">
             <div className="flex-1 relative">
               <Textarea
@@ -495,7 +540,7 @@ export function ChatWindow() {
             ) : (
               <Button
                 onClick={sendMessage}
-                disabled={!input.trim()}
+                disabled={!input.trim() && uploadedFiles.length === 0}
                 size="icon"
                 className="h-[52px] w-[52px] rounded-xl melon-gradient shadow-md hover:scale-105 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
                 style={{ boxShadow: '0 3px 12px rgba(255, 107, 107, 0.25)' }}
@@ -503,6 +548,21 @@ export function ChatWindow() {
                 <Send className="h-4.5 w-4.5" />
               </Button>
             )}
+          </div>
+          
+          {/* Bottom toolbar with model selector and upload buttons */}
+          <div className="flex items-center justify-between mt-2 pt-2 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.05)' }}>
+            <div className="flex items-center gap-2">
+              <FileUpload
+                files={[]}
+                onFilesChange={(newFiles) => setUploadedFiles((prev) => [...prev, ...newFiles])}
+                disabled={isLoading}
+              />
+            </div>
+            <ChatModelSelector
+              selectedModel={model}
+              onModelChange={setModel}
+            />
           </div>
         </div>
       </footer>
