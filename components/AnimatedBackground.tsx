@@ -18,8 +18,15 @@ export function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const particlesRef = useRef<Particle[]>([])
   const { theme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+    
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -113,7 +120,9 @@ export function AnimatedBackground() {
       window.removeEventListener("resize", resizeCanvas)
       cancelAnimationFrame(animationId)
     }
-  }, [theme])
+  }, [theme, mounted])
+
+  if (!mounted) return null
 
   return (
     <canvas
