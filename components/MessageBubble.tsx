@@ -182,7 +182,6 @@ export function MessageBubble({ role, content, onCopy, onEdit }: MessageBubblePr
   const id = useId()
   const renderedContent = useMemo(() => renderContent(content, id), [content, id])
   const [copied, setCopied] = useState(false)
-  const [showActions, setShowActions] = useState(false)
 
   const handleCopy = useCallback(async () => {
     await navigator.clipboard.writeText(content)
@@ -201,8 +200,6 @@ export function MessageBubble({ role, content, onCopy, onEdit }: MessageBubblePr
         role === "user" ? "flex-row-reverse" : ""
       }`}
       style={{ animation: 'messageEnter 0.3s ease-out' }}
-      onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => setShowActions(false)}
     >
       <div
         className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center shadow-sm ${
@@ -239,16 +236,12 @@ export function MessageBubble({ role, content, onCopy, onEdit }: MessageBubblePr
           </div>
         </div>
         
-        {/* Action buttons - show on hover for user messages */}
+        {/* Action buttons - ALWAYS visible for user messages */}
         {role === "user" && (
-          <div 
-            className={`flex justify-end gap-1 mt-1.5 transition-opacity duration-200 ${
-              showActions ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
+          <div className="flex justify-end gap-1.5 mt-2">
             <button
               onClick={handleCopy}
-              className="p-1.5 rounded-md transition-all duration-200 hover:scale-105"
+              className="p-1.5 rounded-md transition-all duration-200 hover:scale-105 hover:bg-white/10"
               style={{ 
                 background: 'rgba(255, 255, 255, 0.05)',
                 color: copied ? 'var(--melon-green)' : 'rgba(255, 255, 255, 0.5)'
@@ -261,7 +254,7 @@ export function MessageBubble({ role, content, onCopy, onEdit }: MessageBubblePr
             {onEdit && (
               <button
                 onClick={handleEdit}
-                className="p-1.5 rounded-md transition-all duration-200 hover:scale-105"
+                className="p-1.5 rounded-md transition-all duration-200 hover:scale-105 hover:bg-white/10"
                 style={{ 
                   background: 'rgba(255, 255, 255, 0.05)',
                   color: 'rgba(255, 255, 255, 0.5)'
@@ -275,16 +268,12 @@ export function MessageBubble({ role, content, onCopy, onEdit }: MessageBubblePr
           </div>
         )}
         
-        {/* Copy button for assistant messages */}
+        {/* Copy button - ALWAYS visible for assistant messages */}
         {role === "assistant" && (
-          <div 
-            className={`flex justify-start gap-1 mt-1.5 transition-opacity duration-200 ${
-              showActions ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
+          <div className="flex justify-start gap-1.5 mt-2">
             <button
               onClick={handleCopy}
-              className="p-1.5 rounded-md transition-all duration-200 hover:scale-105"
+              className="p-1.5 rounded-md transition-all duration-200 hover:scale-105 hover:bg-white/10"
               style={{ 
                 background: 'rgba(255, 255, 255, 0.05)',
                 color: copied ? 'var(--melon-green)' : 'rgba(255, 255, 255, 0.5)'

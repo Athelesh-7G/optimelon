@@ -28,14 +28,20 @@ export function Sidebar({
   onDeleteChat,
   onOpenSettings,
 }: SidebarProps) {
-  // Use state with useEffect to avoid hydration mismatch
-  const [isOpen, setIsOpen] = useState(false)
+  // Start with sidebar open on desktop, closed on mobile
+  // Use null initially to avoid hydration mismatch
+  const [isOpen, setIsOpen] = useState<boolean | null>(null)
   const [isMobile, setIsMobile] = useState(false)
 
   // Handle responsive detection after mount to avoid hydration issues
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
+      const mobile = window.innerWidth < 768
+      setIsMobile(mobile)
+      // Set initial open state based on screen size (only on first mount)
+      if (isOpen === null) {
+        setIsOpen(!mobile)
+      }
     }
     
     // Initial check
@@ -44,7 +50,7 @@ export function Sidebar({
     // Listen for resize
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
-  }, [])
+  }, [isOpen])
 
   // Close sidebar when selecting chat on mobile
   const handleSelectChat = (chatId: string) => {
@@ -61,20 +67,19 @@ export function Sidebar({
     }
   }
 
-  // Toggle button - visible on mobile (fixed) and available on desktop within sidebar
+  // Toggle button - ALWAYS visible when sidebar is closed
   const SidebarToggle = () => {
-    // Only show floating toggle on mobile when sidebar is closed
-    if (!isMobile) return null
+    // Show toggle when sidebar is closed (any screen size)
+    if (isOpen) return null
     
     return (
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 p-2.5 rounded-xl border transition-all duration-200 shadow-sm"
+        onClick={() => setIsOpen(true)}
+        className="fixed top-4 left-4 z-50 p-2.5 rounded-xl border transition-all duration-200 shadow-sm flex items-center justify-center"
         style={{ 
           background: 'rgba(26, 26, 31, 0.95)', 
           borderColor: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(16px)',
-          display: isOpen ? 'none' : 'flex'
+          backdropFilter: 'blur(16px)'
         }}
         aria-label="Open sidebar"
       >
@@ -83,18 +88,18 @@ export function Sidebar({
     )
   }
 
-  // Determine if sidebar should be visible
-  const sidebarVisible = !isMobile || isOpen
+  // Sidebar visible when isOpen is true (or null during SSR - default to hidden to avoid flash)
+  const sidebarVisible = isOpen === true
 
   return (
     <>
       <SidebarToggle />
       
-      {/* Mobile backdrop */}
+      {/* Backdrop - only show on mobile when sidebar is open */}
       {isMobile && isOpen && (
         <button
           type="button"
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30"
+          className="fixed inset-0 bg-background/60 backdrop-blur-sm z-30"
           onClick={() => setIsOpen(false)}
           aria-label="Close sidebar"
         />
@@ -113,20 +118,18 @@ export function Sidebar({
           backdropFilter: 'blur(16px)' 
         }}
       >
-      {/* Close button inside sidebar on mobile */}
-      {isMobile && isOpen && (
-        <button
-          onClick={() => setIsOpen(false)}
-          className="absolute top-3 right-3 p-2 rounded-lg transition-all duration-200 z-10"
-          style={{ 
-            background: 'rgba(255, 255, 255, 0.05)',
-            color: 'rgba(255, 255, 255, 0.7)'
-          }}
-          aria-label="Close sidebar"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      )}
+      {/* Close button inside sidebar - ALWAYS visible when sidebar is open */}
+      <button
+        onClick={() => setIsOpen(false)}
+        className="absolute top-3 right-3 p-2 rounded-lg transition-all duration-200 z-10 hover:bg-white/10"
+        style={{ 
+          background: 'rgba(255, 255, 255, 0.05)',
+          color: 'rgba(255, 255, 255, 0.7)'
+        }}
+        aria-label="Close sidebar"
+      >
+        <X className="h-4 w-4" />
+      </button>
       {/* Sidebar Header */}
       <div className="p-3 border-b" style={{ borderColor: "rgba(255, 255, 255, 0.06)" }}>
         {/* New Chat Button */}
