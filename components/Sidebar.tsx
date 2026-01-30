@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Plus, Home, Settings, Trash2 } from "lucide-react"
+import { Plus, Settings, Trash2, Linkedin, Instagram, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { formatDistanceToNow } from "date-fns"
 
@@ -192,18 +192,58 @@ export function Sidebar({
 
       {/* Sidebar Footer */}
       <div
-        className="p-2 border-t space-y-1"
+        className="p-3 border-t space-y-3"
         style={{ borderColor: "rgba(255, 255, 255, 0.06)" }}
       >
-        <Button
-          onClick={handleNewChat}
-          variant="ghost"
-          className="w-full justify-start hover:bg-white/5 transition-colors text-xs"
-          style={{ color: "rgba(255, 255, 255, 0.6)" }}
-        >
-          <Home className="h-3.5 w-3.5 mr-2" />
-          New Conversation
-        </Button>
+        {/* Creator Block */}
+        <div className="space-y-2">
+          <div>
+            <h3 
+              className="text-xs font-semibold"
+              style={{ color: "rgba(255, 255, 255, 0.9)" }}
+            >
+              Athelesh Balachandran
+            </h3>
+            <p 
+              className="text-[10px]"
+              style={{ color: "rgba(255, 255, 255, 0.5)" }}
+            >
+              Creator of OptiMelon
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <a
+              href="https://www.linkedin.com/in/athelesh-balachandran-60a07927a"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1.5 rounded-md hover:bg-white/5 transition-colors"
+              style={{ color: "rgba(255, 255, 255, 0.6)" }}
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="h-3.5 w-3.5" />
+            </a>
+            <a
+              href="https://www.instagram.com/athelesh_balachandran/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1.5 rounded-md hover:bg-white/5 transition-colors"
+              style={{ color: "rgba(255, 255, 255, 0.6)" }}
+              aria-label="Instagram"
+            >
+              <Instagram className="h-3.5 w-3.5" />
+            </a>
+            <a
+              href="mailto:atheleshbalachandran14@gmail.com"
+              className="p-1.5 rounded-md hover:bg-white/5 transition-colors"
+              style={{ color: "rgba(255, 255, 255, 0.6)" }}
+              aria-label="Email"
+            >
+              <Mail className="h-3.5 w-3.5" />
+            </a>
+          </div>
+        </div>
+
+        {/* Settings Button */}
         <Button
           onClick={onOpenSettings}
           variant="ghost"
