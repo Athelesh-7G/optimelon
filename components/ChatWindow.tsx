@@ -399,9 +399,7 @@ export function ChatWindow() {
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-[60vh] text-center">
               <div className="relative mb-6">
-                <div className="w-24 h-24 rounded-3xl flex items-center justify-center" style={{ background: 'rgba(255, 107, 107, 0.15)' }}>
-                  <span className="text-5xl" role="img" aria-label="watermelon">🍉</span>
-                </div>
+                <span className="text-7xl" role="img" aria-label="watermelon">🍉</span>
                 <Sparkles className="absolute -top-2 -right-2 w-6 h-6 animate-pulse" style={{ color: 'var(--melon-green)' }} />
               </div>
               <h2 className="text-2xl font-bold mb-3" style={{ color: 'rgba(255, 255, 255, 0.95)' }}>
