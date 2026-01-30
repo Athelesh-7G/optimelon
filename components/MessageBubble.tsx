@@ -24,12 +24,12 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
   return (
     <div className="my-3 rounded-xl border border-border overflow-hidden shadow-sm" style={{ background: 'rgba(10, 10, 11, 0.8)' }}>
       <div className="flex items-center justify-between px-4 py-2 text-sm border-b" style={{ background: 'rgba(255, 255, 255, 0.02)', borderColor: 'rgba(255, 255, 255, 0.06)' }}>
-        <span className="font-mono text-xs uppercase font-medium" style={{ color: '#ff6b6b' }}>{language || "code"}</span>
+        <span className="font-mono text-xs uppercase font-medium" style={{ color: '#F87171' }}>{language || "code"}</span>
         <button
           onClick={handleCopy}
           className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs transition-all duration-200 border"
           style={{ 
-            background: copied ? 'rgba(255, 107, 107, 0.1)' : 'transparent',
+            background: copied ? 'rgba(248, 113, 113, 0.1)' : 'transparent',
             borderColor: copied ? 'var(--melon-red)' : 'rgba(255, 255, 255, 0.1)',
             color: copied ? 'var(--melon-red)' : 'rgba(255, 255, 255, 0.6)'
           }}

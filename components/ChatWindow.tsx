@@ -407,7 +407,7 @@ export function ChatWindow() {
               <h2 className="text-3xl font-bold mb-2 tracking-tight" style={{ color: 'rgba(255, 255, 255, 0.95)' }}>
                 OPTI MELON
               </h2>
-              <p className="text-lg font-medium mb-4" style={{ color: '#ff6b6b' }}>
+              <p className="text-lg font-medium mb-4" style={{ color: '#F87171' }}>
                 Ultimate AI Platform
               </p>
               <p className="max-w-lg mb-5 leading-relaxed text-sm" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
@@ -417,10 +417,10 @@ export function ChatWindow() {
                 <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5" style={{ background: 'rgba(152, 216, 200, 0.15)', color: 'var(--melon-green)' }}>
                   <Code className="h-3 w-3" /> Coders
                 </span>
-                <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5" style={{ background: 'rgba(255, 107, 107, 0.15)', color: '#ff6b6b' }}>
+                <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5" style={{ background: 'rgba(248, 113, 113, 0.15)', color: '#F87171' }}>
                   <Pen className="h-3 w-3" /> Creators
                 </span>
-                <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5" style={{ background: 'rgba(255, 107, 107, 0.15)', color: '#ff6b6b' }}>
+                <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5" style={{ background: 'rgba(248, 113, 113, 0.15)', color: '#F87171' }}>
                   <Brain className="h-3 w-3" /> Reasoning
                 </span>
                 <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5" style={{ background: 'rgba(152, 216, 200, 0.12)', color: 'var(--melon-green)' }}>
@@ -475,9 +475,9 @@ export function ChatWindow() {
                     <div className="flex items-center gap-2">
                       <span style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Generating response</span>
                       <span className="flex gap-1" aria-hidden="true">
-                        <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: '#ff6b6b', animationDelay: "0ms" }} />
-                        <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: '#ff6b6b', animationDelay: "150ms" }} />
-                        <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: '#ff6b6b', animationDelay: "300ms" }} />
+                        <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: '#F87171', animationDelay: "0ms" }} />
+                        <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: '#F87171', animationDelay: "150ms" }} />
+                        <span className="w-1.5 h-1.5 rounded-full animate-bounce" style={{ background: '#F87171', animationDelay: "300ms" }} />
                       </span>
                     </div>
                     <p className="text-xs mt-1 hidden sm:block" style={{ color: 'rgba(255, 255, 255, 0.4)' }}>
@@ -494,7 +494,7 @@ export function ChatWindow() {
 
       {/* Error display */}
       {error && (
-        <div className="flex-shrink-0 border-t px-4 py-3" style={{ background: 'rgba(255, 107, 107, 0.1)', borderColor: 'rgba(255, 107, 107, 0.2)', animation: 'messageEnter 0.3s ease-out' }}>
+        <div className="flex-shrink-0 border-t px-4 py-3" style={{ background: 'rgba(248, 113, 113, 0.1)', borderColor: 'rgba(248, 113, 113, 0.2)', animation: 'messageEnter 0.3s ease-out' }}>
           <div className="max-w-4xl mx-auto">
             <p className="text-sm" style={{ color: 'var(--melon-red)' }}>{error}</p>
           </div>
