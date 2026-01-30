@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Plus, Settings, Trash2, Linkedin, Instagram, Mail } from "lucide-react"
+import { Plus, Settings, Trash2, Linkedin, Instagram, Mail, PanelLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { formatDistanceToNow } from "date-fns"
 
@@ -75,6 +75,17 @@ export function Sidebar({
         />
       )}
 
+      {/* Peek strip - visible when sidebar is closed (desktop only) */}
+      {!isMobile && !isOpen && (
+        <button
+          onClick={onToggle}
+          className="fixed left-0 top-0 h-screen w-10 z-40 flex items-center justify-center bg-sidebar/50 backdrop-blur-md border-r border-sidebar-border hover:bg-sidebar/80 transition-colors group"
+          aria-label="Open sidebar"
+        >
+          <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-sidebar-foreground transition-colors" />
+        </button>
+      )}
+
       <aside
         className={`
           fixed inset-y-0 left-0 z-40
@@ -87,10 +98,19 @@ export function Sidebar({
           backdropFilter: 'blur(20px)' 
         }}
       >
-        {/* Sidebar Header */}
-        <div className="flex items-center gap-2 p-3 border-b border-sidebar-border">
-          <span className="text-lg" role="img" aria-label="watermelon">🍉</span>
-          <span className="text-sm font-medium text-sidebar-foreground">Chats</span>
+        {/* Sidebar Header with Toggle */}
+        <div className="flex items-center justify-between p-3 border-b border-sidebar-border">
+          <div className="flex items-center gap-2">
+            <span className="text-lg" role="img" aria-label="watermelon">🍉</span>
+            <span className="text-sm font-medium text-sidebar-foreground">Chats</span>
+          </div>
+          <button
+            onClick={onToggle}
+            className="p-1.5 rounded-md hover:bg-sidebar-accent transition-colors text-muted-foreground hover:text-sidebar-foreground"
+            aria-label="Close sidebar"
+          >
+            <PanelLeft className="h-4 w-4" />
+          </button>
         </div>
         
         {/* New Chat Button */}
@@ -98,7 +118,7 @@ export function Sidebar({
           <Button
             onClick={handleNewChat}
             className="w-full melon-gradient hover:opacity-90 transition-all duration-200 text-sm text-white"
-            style={{ boxShadow: "0 2px 6px rgba(255, 107, 107, 0.15)" }}
+            style={{ boxShadow: "0 2px 6px rgba(233, 30, 99, 0.25)" }}
           >
             <Plus className="h-4 w-4 mr-2" />
             New Chat

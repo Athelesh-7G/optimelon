@@ -2,7 +2,8 @@
 
 import React from "react"
 import { useState, useEffect, useRef, useCallback } from "react"
-import { Send, Loader2, Sparkles, Square, PanelLeft, Code, Pen, Brain, Globe } from "lucide-react"
+import { Send, Loader2, Sparkles, Square, Code, Pen, Brain, Globe, Sun, Moon } from "lucide-react"
+import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { MessageBubble } from "./MessageBubble"
@@ -62,6 +63,14 @@ export function ChatWindow() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
+  
+  const { theme, setTheme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  
+  // Only show theme toggle after mount to avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Handle responsive detection after mount to avoid hydration issues
   useEffect(() => {
@@ -365,31 +374,35 @@ export function ChatWindow() {
       {/* Main Chat Panel - adjusts margin based on sidebar state (desktop only) */}
       <div 
         className="flex flex-col flex-1 min-w-0 transition-all duration-300 ease-in-out"
-        style={{ marginLeft: !isMobile && sidebarOpen ? '260px' : '0' }}
+        style={{ marginLeft: !isMobile ? (sidebarOpen ? '260px' : '40px') : '0' }}
       >
         {/* Header with glass effect */}
         <header className="flex-shrink-0 border-b border-border px-4 py-3 glass-card relative z-10">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              {/* Claude-style sidebar toggle */}
-              <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2 rounded-lg transition-all duration-200 hover:bg-secondary text-muted-foreground"
-                aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
-              >
-                <PanelLeft className="h-5 w-5" />
-              </button>
-              <div className="flex items-center gap-1">
-                <span className="text-xl" role="img" aria-label="watermelon">🍉</span>
-                <h1 className="text-base font-semibold tracking-tight text-foreground">
-                  OptiMelon
-                </h1>
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xl" role="img" aria-label="watermelon">🍉</span>
+              <h1 className="text-base font-semibold tracking-tight text-foreground">
+                OptiMelon
+              </h1>
             </div>
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-md bg-secondary/50">
                 <span className="text-xs font-mono truncate max-w-[140px] text-muted-foreground">{getModelDisplayName(model)}</span>
               </div>
+              {/* Theme Toggle Button */}
+              {mounted && (
+                <button
+                  onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+                  className="p-2 rounded-lg transition-all duration-200 hover:bg-secondary text-muted-foreground hover:text-foreground"
+                  aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                >
+                  {resolvedTheme === 'dark' ? (
+                    <Sun className="h-5 w-5" />
+                  ) : (
+                    <Moon className="h-5 w-5" />
+                  )}
+                </button>
+              )}
             </div>
           </div>
         </header>
@@ -524,8 +537,8 @@ export function ChatWindow() {
                 size="icon"
                 className="h-[52px] w-[52px] rounded-xl transition-all duration-200 border flex-shrink-0 group"
                 style={{
-                  background: 'rgba(255, 107, 107, 0.15)',
-                  borderColor: 'rgba(255, 107, 107, 0.4)',
+                  background: 'rgba(233, 30, 99, 0.15)',
+                  borderColor: 'rgba(233, 30, 99, 0.4)',
                   color: 'var(--melon-red)',
                   animation: 'pulseGlow 2s ease-in-out infinite'
                 }}
@@ -539,8 +552,8 @@ export function ChatWindow() {
                 onClick={sendMessage}
                 disabled={!input.trim() && uploadedFiles.length === 0}
                 size="icon"
-                className="h-[52px] w-[52px] rounded-xl melon-gradient shadow-md hover:scale-105 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
-                style={{ boxShadow: '0 3px 12px rgba(255, 107, 107, 0.25)' }}
+                className="h-[52px] w-[52px] rounded-xl melon-gradient shadow-md hover:scale-105 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 text-white"
+                style={{ boxShadow: '0 3px 12px rgba(233, 30, 99, 0.25)' }}
               >
                 <Send className="h-4.5 w-4.5" />
               </Button>
