@@ -15,35 +15,30 @@ interface ChatModelSelectorProps {
   onModelChange: (modelId: string) => void
 }
 
-// Category config with icon and color - using CSS variables for theme support
-const CATEGORY_CONFIG: Record<ModelCategory, { icon: React.ReactNode; colorVar: string; color: string; bgColor: string }> = {
+// Category config with icon and color - using canonical watermelon red tokens
+const CATEGORY_CONFIG: Record<ModelCategory, { icon: React.ReactNode; color: string; bgColor: string }> = {
   general: {
     icon: <Sparkles className="h-3.5 w-3.5" />,
-    colorVar: "var(--melon-green)",
     color: "var(--melon-green)",
     bgColor: "color-mix(in srgb, var(--melon-green) 15%, transparent)",
   },
   coders: {
     icon: <Code className="h-3.5 w-3.5" />,
-    colorVar: "var(--melon-red)",
     color: "var(--melon-red)",
-    bgColor: "color-mix(in srgb, var(--melon-red) 15%, transparent)",
+    bgColor: "var(--melon-red-muted)",
   },
   creators: {
     icon: <Pen className="h-3.5 w-3.5" />,
-    colorVar: "var(--melon-red)",
     color: "var(--melon-red)",
-    bgColor: "color-mix(in srgb, var(--melon-red) 15%, transparent)",
+    bgColor: "var(--melon-red-muted)",
   },
   reasoning: {
     icon: <Brain className="h-3.5 w-3.5" />,
-    colorVar: "#7C3AED",
     color: "#7C3AED",
     bgColor: "rgba(124, 58, 237, 0.15)",
   },
   enterprise: {
     icon: <Globe className="h-3.5 w-3.5" />,
-    colorVar: "#2563EB",
     color: "#2563EB",
     bgColor: "rgba(37, 99, 235, 0.15)",
   },
