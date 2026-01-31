@@ -449,13 +449,13 @@ export function ChatWindow() {
                   <button
                     key={suggestion.text}
                     onClick={() => setInput(suggestion.text)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-card hover:bg-secondary transition-all duration-200 text-sm hover:scale-105 text-foreground"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-full border-2 border-border bg-card hover:bg-secondary hover:border-primary/30 transition-all duration-200 text-sm hover:scale-105 text-foreground shadow-sm"
                   >
-                    {suggestion.icon === "code" && <Code className="h-3.5 w-3.5" />}
-                    {suggestion.icon === "pen" && <Pen className="h-3.5 w-3.5" />}
-                    {suggestion.icon === "brain" && <Brain className="h-3.5 w-3.5" />}
-                    {suggestion.icon === "globe" && <Globe className="h-3.5 w-3.5" />}
-                    <span>{suggestion.text}</span>
+                    {suggestion.icon === "code" && <Code className="h-3.5 w-3.5 text-primary" />}
+                    {suggestion.icon === "pen" && <Pen className="h-3.5 w-3.5 text-primary" />}
+                    {suggestion.icon === "brain" && <Brain className="h-3.5 w-3.5 text-primary" />}
+                    {suggestion.icon === "globe" && <Globe className="h-3.5 w-3.5 text-primary" />}
+                    <span className="font-medium">{suggestion.text}</span>
                   </button>
                 ))}
               </div>
@@ -498,7 +498,7 @@ export function ChatWindow() {
 
       {/* Error display */}
       {error && (
-        <div className="flex-shrink-0 border-t px-4 py-3" style={{ background: 'rgba(229, 57, 53, 0.1)', borderColor: 'rgba(229, 57, 53, 0.2)', animation: 'messageEnter 0.3s ease-out' }}>
+        <div className="flex-shrink-0 border-t px-4 py-3" style={{ background: 'var(--melon-red-muted)', borderColor: 'var(--melon-red-border)', animation: 'messageEnter 0.3s ease-out' }}>
           <div className="max-w-4xl mx-auto">
             <p className="text-sm" style={{ color: 'var(--melon-red)' }}>{error}</p>
           </div>
@@ -537,8 +537,8 @@ export function ChatWindow() {
                 size="icon"
                 className="h-[52px] w-[52px] rounded-xl transition-all duration-200 border flex-shrink-0 group"
                 style={{
-                  background: 'rgba(229, 57, 53, 0.15)',
-                  borderColor: 'rgba(229, 57, 53, 0.4)',
+                  background: 'var(--melon-red-muted)',
+                  borderColor: 'var(--melon-red-border)',
                   color: 'var(--melon-red)',
                   animation: 'pulseGlow 2s ease-in-out infinite'
                 }}
@@ -553,7 +553,7 @@ export function ChatWindow() {
                 disabled={!input.trim() && uploadedFiles.length === 0}
                 size="icon"
                 className="h-[52px] w-[52px] rounded-xl melon-gradient shadow-md hover:scale-105 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 text-white"
-                style={{ boxShadow: '0 3px 12px rgba(229, 57, 53, 0.25)' }}
+                style={{ boxShadow: '0 3px 12px var(--melon-red-muted)' }}
               >
                 <Send className="h-4.5 w-4.5" />
               </Button>
@@ -561,7 +561,7 @@ export function ChatWindow() {
           </div>
           
           {/* Bottom toolbar with file upload + model selectors (all left-aligned) */}
-          <div className="flex items-center gap-1 mt-2 pt-2 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.05)' }}>
+          <div className="flex items-center gap-1 mt-2 pt-2 border-t border-border">
             <FileUpload
               files={[]}
               onFilesChange={(newFiles) => setUploadedFiles((prev) => [...prev, ...newFiles])}
