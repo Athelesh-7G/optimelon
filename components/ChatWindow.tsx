@@ -449,13 +449,13 @@ export function ChatWindow() {
                   <button
                     key={suggestion.text}
                     onClick={() => setInput(suggestion.text)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-card hover:bg-secondary transition-all duration-200 text-sm hover:scale-105 text-foreground"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-full border-2 border-border bg-card hover:bg-secondary hover:border-primary/30 transition-all duration-200 text-sm hover:scale-105 text-foreground shadow-sm"
                   >
-                    {suggestion.icon === "code" && <Code className="h-3.5 w-3.5" />}
-                    {suggestion.icon === "pen" && <Pen className="h-3.5 w-3.5" />}
-                    {suggestion.icon === "brain" && <Brain className="h-3.5 w-3.5" />}
-                    {suggestion.icon === "globe" && <Globe className="h-3.5 w-3.5" />}
-                    <span>{suggestion.text}</span>
+                    {suggestion.icon === "code" && <Code className="h-3.5 w-3.5 text-primary" />}
+                    {suggestion.icon === "pen" && <Pen className="h-3.5 w-3.5 text-primary" />}
+                    {suggestion.icon === "brain" && <Brain className="h-3.5 w-3.5 text-primary" />}
+                    {suggestion.icon === "globe" && <Globe className="h-3.5 w-3.5 text-primary" />}
+                    <span className="font-medium">{suggestion.text}</span>
                   </button>
                 ))}
               </div>
@@ -561,7 +561,7 @@ export function ChatWindow() {
           </div>
           
           {/* Bottom toolbar with file upload + model selectors (all left-aligned) */}
-          <div className="flex items-center gap-1 mt-2 pt-2 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.05)' }}>
+          <div className="flex items-center gap-1 mt-2 pt-2 border-t border-border">
             <FileUpload
               files={[]}
               onFilesChange={(newFiles) => setUploadedFiles((prev) => [...prev, ...newFiles])}

@@ -20,42 +20,48 @@
   --popover-foreground: #1A1A1F;
   --primary: #D32F2F;
   --primary-foreground: #FFFFFF;
-  --secondary: #F5F5F4;
+  --secondary: #F0EFED;
   --secondary-foreground: #1A1A1F;
-  --muted: #F0F0EE;
-  --muted-foreground: #6B6B73;
-  --accent: #4ECDC4;
-  --accent-foreground: #1A1A1F;
+  --muted: #E8E7E5;
+  --muted-foreground: #52525A;
+  --accent: #0D9488;
+  --accent-foreground: #FFFFFF;
   --destructive: #B71C1C;
   --destructive-foreground: #FFFFFF;
-  --border: #E5E5E3;
-  --input: #F5F5F4;
+  --border: #D4D4D2;
+  --input: #FFFFFF;
   --ring: rgba(211, 47, 47, 0.5);
   --chart-1: #E53935;
-  --chart-2: #4ECDC4;
+  --chart-2: #0D9488;
   --chart-3: #D32F2F;
-  --chart-4: #98D8C8;
+  --chart-4: #14B8A6;
   --chart-5: #EF5350;
   --radius: 0.75rem;
   --sidebar: #FFFFFF;
   --sidebar-foreground: #1A1A1F;
   --sidebar-primary: #D32F2F;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F5F5F4;
+  --sidebar-accent: #F0EFED;
   --sidebar-accent-foreground: #1A1A1F;
-  --sidebar-border: #E5E5E3;
+  --sidebar-border: #D4D4D2;
   --sidebar-ring: rgba(211, 47, 47, 0.5);
   
   /* Light Mode Melon Colors - Deep Watermelon Red */
   --melon-red: #D32F2F;
   --melon-coral: #E53935;
   --melon-pink: #EF5350;
-  --melon-green: #4ECDC4;
+  --melon-green: #0D9488;
   
   /* Light Mode Glass Surfaces */
-  --glass-bg: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(0, 0, 0, 0.12);
   --glass-glow: rgba(229, 57, 53, 0.1);
+  
+  /* Light Mode Interactive Colors */
+  --interactive-muted: rgba(0, 0, 0, 0.5);
+  --interactive-hover: rgba(0, 0, 0, 0.7);
+  --dropdown-bg: rgba(255, 255, 255, 0.98);
+  --dropdown-item-hover: rgba(0, 0, 0, 0.05);
 }
 
 .dark {
@@ -103,6 +109,12 @@
   --glass-bg: rgba(26, 26, 31, 0.6);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-glow: rgba(229, 57, 53, 0.15);
+  
+  /* Dark Mode Interactive Colors */
+  --interactive-muted: rgba(255, 255, 255, 0.6);
+  --interactive-hover: rgba(255, 255, 255, 0.9);
+  --dropdown-bg: rgba(26, 26, 31, 0.98);
+  --dropdown-item-hover: rgba(255, 255, 255, 0.05);
 }
 
 @theme inline {
@@ -160,23 +172,23 @@
    Pure CSS - No JavaScript - No hydration issues
    ============================================ */
 
-/* Light mode background - subtle cream gradients */
+/* Light mode background - clean white with subtle accent */
 body {
   background: 
     radial-gradient(
       1200px 600px at 10% 10%,
-      rgba(229, 57, 53, 0.04),
+      rgba(211, 47, 47, 0.03),
       transparent 60%
     ),
     radial-gradient(
       1000px 500px at 90% 20%,
-      rgba(78, 205, 196, 0.04),
+      rgba(13, 148, 136, 0.03),
       transparent 65%
     ),
     linear-gradient(
       180deg,
-      #FAFAF9,
-      #F5F5F4
+      #FFFFFF,
+      #FAFAFA
     );
   background-attachment: fixed;
 }
