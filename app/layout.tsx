@@ -13,7 +13,7 @@ const _geistMono = V0_Font_Geist_Mono({ subsets: ['latin'], weight: ["100","200"
 const _vollkorn = V0_Font_Vollkorn({ subsets: ['latin'], weight: ["400","500","600","700","800","900"] })
 
 export const metadata: Metadata = {
-  title: 'OptiMelon - High-Signal LLM Wrapper',
+  title: 'OptiMelon - The Unified AI Studio',
   description: 'A clean, provider-agnostic LLM chat interface designed for productive technical work.',
   generator: 'v0.app',
   icons: {
