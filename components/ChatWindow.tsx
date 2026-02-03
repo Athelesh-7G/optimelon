@@ -420,7 +420,7 @@ export function ChatWindow() {
       {/* Main Chat Panel - adjusts margin based on sidebar state (desktop only) */}
       <div 
         className="flex flex-col flex-1 min-w-0 transition-all duration-300 ease-in-out"
-        style={{ marginLeft: !isMobile ? (sidebarOpen ? '260px' : '40px') : '0' }}
+        style={{ marginLeft: !isMobile ? (sidebarOpen ? '260px' : '0') : '0' }}
       >
         {/* Header with glass effect */}
         <header className="flex-shrink-0 border-b border-border px-4 py-3 glass-card relative z-10">
@@ -475,7 +475,7 @@ export function ChatWindow() {
                 Welcome to OptiMelon
               </h2>
               <p className="max-w-lg mb-5 leading-relaxed text-sm text-muted-foreground">
-                10+ elite models &bull; Massive context &bull; Max performance
+                The Top Models (Qwen, Deepseek, Stable Diffusion XL, GLM, Kimi, LLAMA) • Massive Context • Max Performance
               </p>
               <div className="flex flex-wrap justify-center gap-2 mb-6 max-w-md">
                 <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 bg-accent/15 text-accent">
