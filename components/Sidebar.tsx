@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { Plus, Settings, Trash2, Linkedin, Instagram, Mail, PanelLeft } from "lucide-react"
+import { Plus, Settings, Trash2, Linkedin, Instagram, Mail, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { formatDistanceToNow } from "date-fns"
 
@@ -97,9 +97,9 @@ export function Sidebar({
           <button
             onClick={onToggle}
             className="p-1.5 rounded-md hover:bg-sidebar-accent transition-colors text-muted-foreground hover:text-sidebar-foreground"
-            aria-label="Close sidebar"
+            aria-label="Toggle sidebar"
           >
-            <PanelLeft className="h-4 w-4" />
+            <Menu className="h-4 w-4" />
           </button>
         </div>
         

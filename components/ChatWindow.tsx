@@ -2,7 +2,7 @@
 
 import React from "react"
 import { useState, useEffect, useRef, useCallback } from "react"
-import { Send, Sparkles, Square, Code, Pen, Brain, Globe, Sun, Moon, Wand2 } from "lucide-react"
+import { Send, Sparkles, Square, Code, Pen, Brain, Globe, Sun, Moon, Wand2, Menu } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -426,6 +426,15 @@ export function ChatWindow() {
         <header className="flex-shrink-0 border-b border-border px-4 py-3 glass-card relative z-10">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-2">
+              {!sidebarOpen && (
+                <button
+                  onClick={() => setSidebarOpen(true)}
+                  className="p-2 rounded-lg transition-all duration-200 hover:bg-secondary text-muted-foreground hover:text-foreground"
+                  aria-label="Open sidebar"
+                >
+                  <Menu className="h-5 w-5" />
+                </button>
+              )}
               <span className="text-xl" role="img" aria-label="watermelon">🍉</span>
               <h1 className="text-base font-semibold tracking-tight text-foreground">
                 OptiMelon
