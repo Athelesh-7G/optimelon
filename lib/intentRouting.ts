@@ -9,12 +9,58 @@ export interface RoutingResult {
   modelId: string
 }
 
-const INTENT_KEYWORDS: Record<IntentType, string[]> = {
-  coding: ["code", "debug", "bug", "typescript", "javascript", "python", "refactor", "compile", "error", "stack trace", "api", "function"],
-  creative: ["write", "story", "poem", "creative", "lyrics", "novel", "script", "content", "brand", "marketing"],
-  analysis: ["analyze", "analysis", "insight", "compare", "calculate", "data", "statistics", "chart", "forecast", "summary"],
-  image: ["image", "generate image", "illustration", "photo", "art", "render", "design", "poster", "logo"],
-  research: ["research", "paper", "citations", "academic", "study", "literature", "survey"],
+const INTENT_PHRASES: Record<IntentType, string[]> = {
+  coding: [
+    "build a function",
+    "write code",
+    "debug",
+    "fix a bug",
+    "refactor",
+    "implement",
+    "stack trace",
+    "api",
+  ],
+  creative: [
+    "write a story",
+    "craft a narrative",
+    "creative writing",
+    "poem",
+    "lyrics",
+    "script",
+    "brand voice",
+  ],
+  analysis: [
+    "analyze",
+    "analysis",
+    "compare",
+    "forecast",
+    "summarize",
+    "data insights",
+  ],
+  image: [
+    "generate an image",
+    "create an image",
+    "illustration",
+    "visual design",
+    "poster",
+    "logo",
+  ],
+  research: [
+    "research",
+    "literature review",
+    "academic",
+    "citations",
+    "study",
+  ],
+  general: [],
+}
+
+const INTENT_SEMANTIC_TOKENS: Record<IntentType, string[]> = {
+  coding: ["code", "function", "class", "compile", "bug", "error", "script", "algorithm", "refactor", "debug"],
+  creative: ["story", "narrative", "creative", "imagine", "write", "tone", "voice", "poem"],
+  analysis: ["analyze", "analysis", "insight", "compare", "evaluate", "metrics", "data", "statistics"],
+  image: ["image", "visual", "render", "illustration", "design", "photo", "art"],
+  research: ["research", "study", "paper", "citations", "sources", "academic", "survey"],
   general: [],
 }
 
@@ -47,22 +93,24 @@ function findAvailableModel(modelIds: string[]): string | null {
 
 export function getRoutingRecommendation(prompt: string): RoutingResult {
   const normalized = prompt.toLowerCase()
+  const tokens = new Set(
+    normalized
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter(Boolean)
+  )
 
-  const scores = (Object.keys(INTENT_KEYWORDS) as IntentType[]).map((intent) => {
-    const keywords = INTENT_KEYWORDS[intent]
-    const score = keywords.reduce((acc, keyword) => {
-      if (normalized.includes(keyword)) {
-        return acc + 1
-      }
-      return acc
-    }, 0)
+  const scores = (Object.keys(INTENT_PHRASES) as IntentType[]).map((intent) => {
+    const phraseMatches = INTENT_PHRASES[intent].filter((phrase) => normalized.includes(phrase)).length
+    const tokenMatches = INTENT_SEMANTIC_TOKENS[intent].filter((token) => tokens.has(token)).length
+    const score = phraseMatches * 3 + tokenMatches
     return { intent, score }
   })
 
   const best = scores.sort((a, b) => b.score - a.score)[0]
   const resolvedIntent = best.score > 0 ? best.intent : "general"
   const modelId = findAvailableModel(MODEL_PRIORITY[resolvedIntent]) ?? DEFAULT_MODEL_ID
-  const confidence = Math.min(95, 50 + best.score * 10)
+  const confidence = Math.min(95, 45 + best.score * 8)
 
   return {
     intent: resolvedIntent,

@@ -101,7 +101,6 @@ export function FileUpload({ onFilesChange, files, disabled }: FileUploadProps) 
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const imageInputRef = useRef<HTMLInputElement>(null)
-  const documentInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -173,7 +172,6 @@ export function FileUpload({ onFilesChange, files, disabled }: FileUploadProps) 
       // Reset inputs
       if (fileInputRef.current) fileInputRef.current.value = ""
       if (imageInputRef.current) imageInputRef.current.value = ""
-      if (documentInputRef.current) documentInputRef.current.value = ""
     }
   }
 
@@ -233,31 +231,7 @@ export function FileUpload({ onFilesChange, files, disabled }: FileUploadProps) 
           <Image className="h-4 w-4" />
         </Button>
 
-        {/* Document upload */}
-        <input
-          ref={documentInputRef}
-          type="file"
-          multiple
-          accept={[
-            ...ACCEPTED_FILE_TYPES.document,
-            ...ACCEPTED_FILE_TYPES.spreadsheet,
-            ...ACCEPTED_FILE_TYPES.presentation,
-          ].join(",")}
-          onChange={handleFileSelect}
-          className="hidden"
-          disabled={disabled || isUploading}
-        />
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0 rounded-lg transition-all hover:scale-105 text-muted-foreground hover:text-foreground"
-          onClick={() => documentInputRef.current?.click()}
-          disabled={disabled || isUploading}
-          title="Upload document"
-        >
-          <FileText className="h-4 w-4" />
-        </Button>
+        {/* Document upload removed - attach file covers documents */}
       </div>
 
       {/* Error display */}

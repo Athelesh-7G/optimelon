@@ -13,7 +13,6 @@ import { ChatModelSelector } from "./ChatModelSelector"
 import { FileUpload, type UploadedFile } from "./FileUpload"
 import { DEFAULT_SYSTEM_PROMPT, buildMessages } from "@/lib/promptTemplate"
 import { DEFAULT_MODEL_ID, getModelDisplayName, getModelById } from "@/lib/models"
-import { AnimatedLoader } from "./AnimatedLoader"
 import { getRoutingRecommendation, type RoutingResult } from "@/lib/intentRouting"
 import {
   saveMessages,
@@ -137,24 +136,22 @@ export function ChatWindow() {
   const sendMessage = useCallback(async () => {
     if ((!input.trim() && uploadedFiles.length === 0) || isLoading) return
 
-    // Build message content including file info
-    let messageContent = input.trim()
-    if (uploadedFiles.length > 0) {
-      const fileDescriptions = uploadedFiles.map((f) => {
-        const header = `[File: ${f.name} (${f.type || "unknown"})]`
-        if (f.type.startsWith("image/")) {
-          return `${header}\nImage URL: ${f.url}`
-        }
-        if (f.content) {
-          const trimmed = f.content.length > 4000 ? `${f.content.slice(0, 4000)}\n...[truncated]` : f.content
-          return `${header}\nContent:\n${trimmed}`
-        }
-        return `${header}\nNote: No extractable text content.`
-      }).join("\n\n")
-      messageContent = messageContent
-        ? `${messageContent}\n\nAttached files:\n${fileDescriptions}`
-        : `Attached files:\n${fileDescriptions}`
-    }
+    // Build message content without injecting file names into the user prompt
+    const messageContent = input.trim()
+
+    const attachmentsContext = uploadedFiles.length > 0
+      ? uploadedFiles.map((f) => {
+          const header = `[Attachment: ${f.name} (${f.type || "unknown"})]`
+          if (f.type.startsWith("image/")) {
+            return `${header}\nImage URL: ${f.url}`
+          }
+          if (f.content) {
+            const trimmed = f.content.length > 4000 ? `${f.content.slice(0, 4000)}\n...[truncated]` : f.content
+            return `${header}\nContent:\n${trimmed}`
+          }
+          return `${header}\nNote: No extractable text content.`
+        }).join("\n\n")
+      : ""
 
     const userMessage: StoredMessage = {
       id: crypto.randomUUID(),
@@ -183,6 +180,12 @@ export function ChatWindow() {
       }))
 
       const fullMessages = buildMessages(systemPrompt, conversationMessages)
+      if (attachmentsContext) {
+        fullMessages.splice(1, 0, {
+          role: "system",
+          content: `Attached context (not user-visible):\n${attachmentsContext}`,
+        })
+      }
 
       const response = await fetch(isImageModel ? "/api/image" : "/api/chat", {
         method: "POST",
@@ -516,9 +519,28 @@ export function ChatWindow() {
                 />
               ))}
               {isLoading && messages[messages.length - 1]?.role === "user" && (
-                <AnimatedLoader
-                  type={getModelById(model)?.category === "image" ? "image" : "text"}
-                />
+                <div className="flex gap-3" style={{ animation: 'messageEnter 0.3s ease-out' }}>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center bg-accent/15 text-accent">
+                    <div className="w-2.5 h-2.5 rounded-full animate-pulse" style={{ background: 'var(--melon-red)' }} />
+                  </div>
+                  <div className="border border-border rounded-2xl px-4 py-3 shadow-sm bg-card">
+                    <div className="flex items-center gap-2">
+                      <span className="text-foreground/70">
+                        {getModelById(model)?.category === "image"
+                          ? "Image is now being generated..."
+                          : "Generating response"}
+                      </span>
+                      <span className="flex gap-1" aria-hidden="true">
+                        <span className="w-1.5 h-1.5 rounded-full animate-bounce bg-primary" style={{ animationDelay: "0ms" }} />
+                        <span className="w-1.5 h-1.5 rounded-full animate-bounce bg-primary" style={{ animationDelay: "150ms" }} />
+                        <span className="w-1.5 h-1.5 rounded-full animate-bounce bg-primary" style={{ animationDelay: "300ms" }} />
+                      </span>
+                    </div>
+                    <p className="text-xs mt-1 hidden sm:block text-muted-foreground">
+                      Press <kbd className="px-1 py-0.5 rounded text-[10px] border border-border bg-secondary">Esc</kbd> to stop
+                    </p>
+                  </div>
+                </div>
               )}
               <div ref={messagesEndRef} />
             </div>

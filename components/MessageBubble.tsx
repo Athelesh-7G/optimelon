@@ -338,7 +338,7 @@ export function MessageBubble({ role, content, onCopy, onEdit }: MessageBubblePr
               : "border border-border bg-card"
           }`}
         >
-          <div className="max-w-none">
+          <div className="max-w-none break-words">
             {renderedContent}
           </div>
         </div>
