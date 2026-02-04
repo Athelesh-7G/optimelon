@@ -164,6 +164,8 @@ export function ChatWindow() {
     setInput("")
     setUploadedFiles([]) // Clear files after sending
     setError(null)
+    setRoutingModeActive(false)
+    setRoutingNotice(null)
     setIsLoading(true)
 
     const assistantId = crypto.randomUUID()
@@ -474,22 +476,10 @@ export function ChatWindow() {
               <h2 className="text-3xl font-bold mb-4 tracking-tight text-foreground">
                 Welcome to OptiMelon
               </h2>
-              <p className="max-w-lg mb-5 leading-relaxed text-sm text-muted-foreground">
-                The Top Models (Qwen, Deepseek, Stable Diffusion XL, GLM, Kimi, LLAMA) • Massive Context • Max Performance
-              </p>
-              <div className="flex flex-wrap justify-center gap-2 mb-6 max-w-md">
-                <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 bg-accent/15 text-accent">
-                  <Code className="h-3 w-3" /> Coders
-                </span>
-                <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 bg-primary/15 text-primary">
-                  <Pen className="h-3 w-3" /> Creators
-                </span>
-                <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 bg-accent/15 text-accent">
-                  <Brain className="h-3 w-3" /> Reasoning
-                </span>
-                <span className="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 bg-primary/15 text-primary">
-                  <Globe className="h-3 w-3" /> Enterprise
-                </span>
+              <div className="max-w-lg mb-5 text-center text-foreground">
+                <p className="text-sm font-medium leading-relaxed">Powerful AI, Unified.</p>
+                <p className="text-sm font-medium leading-relaxed">Qwen • Deepseek • SDXL • GLM • Kimi • Llama — all in one platform.</p>
+                <p className="mt-2 text-xs font-normal">Built by Athelesh Balachandran</p>
               </div>
               <p className="text-xs mb-6 max-w-sm text-muted-foreground">
                 Upload files &bull; Switch instantly &bull; Chat now
@@ -589,7 +579,10 @@ export function ChatWindow() {
               <button
                 type="button"
                 className="text-[10px] text-primary hover:underline"
-                onClick={() => setRoutingNotice(null)}
+                onClick={() => {
+                  setRoutingNotice(null)
+                  setRoutingModeActive(false)
+                }}
               >
                 Dismiss
               </button>
