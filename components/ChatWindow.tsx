@@ -483,32 +483,32 @@ export function ChatWindow() {
   <p className="text-base md:text-lg font-medium leading-relaxed mb-3">
     Qwen • Deepseek • SDXL • GLM • Kimi • Llama — all in one platform.
   </p>
-  <p className="text-sm text-foreground/80 font-normal">
+  <p className="text-sm font-normal mt-1">
     Built by Athelesh Balachandran
   </p>
 </div>
-              <div className="flex flex-wrap justify-center gap-3">
-                {[
-                  { text: "Help me code", icon: "code" },
-                  { text: "Write creatively", icon: "pen" },
-                  { text: "Analyze data", icon: "brain" },
-                  { text: "Generate image", icon: "image" },
-                  { text: "Research topic", icon: "globe" },
-                ].map((suggestion) => (
-                  <button
-                    key={suggestion.text}
-                    onClick={() => handleQuickAction(suggestion.text)}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-full border-2 border-border bg-card hover:bg-secondary hover:border-primary/30 transition-all duration-200 text-sm hover:scale-105 text-foreground shadow-sm"
-                  >
-                    {suggestion.icon === "code" && <Code className="h-3.5 w-3.5 text-primary" />}
-                    {suggestion.icon === "pen" && <Pen className="h-3.5 w-3.5 text-primary" />}
-                    {suggestion.icon === "brain" && <Brain className="h-3.5 w-3.5 text-primary" />}
-                    {suggestion.icon === "image" && <Sparkles className="h-3.5 w-3.5 text-primary" />}
-                    {suggestion.icon === "globe" && <Globe className="h-3.5 w-3.5 text-primary" />}
-                    <span className="font-medium">{suggestion.text}</span>
-                  </button>
-                ))}
-              </div>
+<div className="flex flex-wrap justify-center gap-3">
+  {[
+    { text: "Help me code", icon: "code" },
+    { text: "Write creatively", icon: "pen" },
+    { text: "Analyze data", icon: "brain" },
+    { text: "Generate image", icon: "image" },
+    { text: "Research topic", icon: "globe" },
+  ].map((suggestion) => (
+    <button
+      key={suggestion.text}
+      onClick={() => handleQuickAction(suggestion.text)}
+      className="flex items-center gap-2 px-4 py-2.5 rounded-full border-2 border-border bg-card hover:bg-secondary hover:border-primary/30 transition-all duration-200 text-sm hover:scale-105 text-foreground shadow-sm"
+    >
+      {suggestion.icon === "code" && <Code className="h-3.5 w-3.5 text-primary" />}
+      {suggestion.icon === "pen" && <Pen className="h-3.5 w-3.5 text-primary" />}
+      {suggestion.icon === "brain" && <Brain className="h-3.5 w-3.5 text-primary" />}
+      {suggestion.icon === "image" && <Sparkles className="h-3.5 w-3.5 text-primary" />}
+      {suggestion.icon === "globe" && <Globe className="h-3.5 w-3.5 text-primary" />}
+      <span className="font-medium">{suggestion.text}</span>
+    </button>
+  ))}
+</div>
             </div>
           ) : (
             <div className="space-y-4">
