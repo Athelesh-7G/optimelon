@@ -476,13 +476,17 @@ export function ChatWindow() {
               <h2 className="text-3xl font-bold mb-4 tracking-tight text-foreground">
                 Welcome to OptiMelon
               </h2>
-              <div className="max-w-2xl mx-auto mb-6 text-center text-foreground">
-               <p className="text-xl md:text-2xl font-semibold leading-tight mb-2">Powerful AI, Unified.
-               </p>
-               <p className="text-base md:text-lg font-medium leading-relaxed mb-3">Qwen • Deepseek • SDXL • GLM • Kimi • Llama — all in one platform.
-               </p><p className="text-sm text-foreground/80 font-normal">Built by Athelesh Balachandran
-              </p>
-              </div>
+              <div className="mx-auto px-4 sm:px-6 lg:px-8 text-center text-foreground">
+  <p className="text-xl md:text-2xl font-semibold leading-tight mb-2">
+    Powerful AI, Unified.
+  </p>
+  <p className="text-base md:text-lg font-medium leading-relaxed mb-3">
+    Qwen • Deepseek • SDXL • GLM • Kimi • Llama — all in one platform.
+  </p>
+  <p className="text-sm text-foreground/80 font-normal">
+    Built by Athelesh Balachandran
+  </p>
+</div>
               <p className="text-xs mb-6 max-w-sm text-muted-foreground">
                 Upload files &bull; Switch instantly &bull; Chat now
               </p>
