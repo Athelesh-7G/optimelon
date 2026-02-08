@@ -1,6 +1,8 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Plus, Settings, Trash2, Linkedin, Instagram, Mail, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { formatDistanceToNow } from "date-fns"
@@ -34,6 +36,7 @@ export function Sidebar({
 }: SidebarProps) {
   const [isMobile, setIsMobile] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const pathname = usePathname()
 
   // Handle responsive detection after mount to avoid hydration issues
   useEffect(() => {
@@ -224,6 +227,16 @@ export function Sidebar({
         </div>
 
         {/* Settings Button */}
+        <Link
+          href="/dashboard"
+          className={`w-full flex items-center justify-start rounded-md px-2 py-1.5 text-xs transition-colors ${
+            pathname === "/dashboard"
+              ? "border-l-2 bg-primary/10 border-primary text-sidebar-foreground"
+              : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+          }`}
+        >
+          🍉 MelonScope
+        </Link>
         <Button
           onClick={onOpenSettings}
           variant="ghost"

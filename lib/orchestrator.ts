@@ -17,7 +17,7 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
   const totalStart = Date.now()
   const lower = prompt.toLowerCase()
 
-  const executionTrace: Array<{ step: string; duration: number; model?: string }> = []
+  const executionTrace: Array<{ step: string; duration: number }> = []
   let currentInput = prompt
   let finalText: string | null = null
   let finalImage: string | null = null
@@ -61,7 +61,7 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
         timestamp: Date.now(),
         intent,
         composite: true,
-        modelsUsed: executionTrace.map((entry) => entry.model).filter(Boolean) as string[],
+        modelsUsed: executionTrace.map((entry) => entry.model).filter(Boolean),
         totalDuration: Date.now() - totalStart,
         executionTrace,
         textLength: finalText?.length,
