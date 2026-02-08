@@ -4,6 +4,7 @@ import React from "react"
 import { useState, useCallback, useMemo, useId } from "react"
 import { Check, Copy, User, Pencil } from "lucide-react"
 import { extractCodeBlocks, parseBlockMarkdown } from "@/lib/markdown"
+import { FeedbackButtons } from "./FeedbackButtons"
 
 function ImageAttachment({ altText, imageUrl }: { altText: string; imageUrl: string }) {
   const downloadImage = async (format: "png" | "jpeg" | "webp" | "original") => {
@@ -100,8 +101,18 @@ function ImageAttachment({ altText, imageUrl }: { altText: string; imageUrl: str
 interface MessageBubbleProps {
   role: "user" | "assistant"
   content: string
+  messageId?: string
+  feedback?: "up" | "down"
+  modelUsed?: string
+  routingConfidence?: number
   onCopy?: (content: string) => void
   onEdit?: (content: string) => void
+  onFeedback?: (params: {
+    messageId: string
+    feedbackType: "up" | "down"
+    modelUsed?: string
+    routingConfidence?: number
+  }) => void
 }
 
 function CodeBlock({ language, code }: { language: string; code: string }) {
@@ -293,7 +304,17 @@ function renderContent(content: string, uniqueId: string, role: "user" | "assist
   return elements
 }
 
-export function MessageBubble({ role, content, onCopy, onEdit }: MessageBubbleProps) {
+export function MessageBubble({
+  role,
+  content,
+  messageId,
+  feedback,
+  modelUsed,
+  routingConfidence,
+  onCopy,
+  onEdit,
+  onFeedback,
+}: MessageBubbleProps) {
   // Use stable ID for hydration safety
   const id = useId()
   const renderedContent = useMemo(() => renderContent(content, id, role), [content, id, role])
@@ -309,6 +330,14 @@ export function MessageBubble({ role, content, onCopy, onEdit }: MessageBubblePr
   const handleEdit = useCallback(() => {
     onEdit?.(content)
   }, [content, onEdit])
+
+  const handleFeedback = useCallback(
+    (feedbackType: "up" | "down") => {
+      if (!messageId || feedback) return
+      onFeedback?.({ messageId, feedbackType, modelUsed, routingConfidence })
+    },
+    [feedback, messageId, modelUsed, onFeedback, routingConfidence]
+  )
 
   return (
     <div
@@ -371,18 +400,21 @@ export function MessageBubble({ role, content, onCopy, onEdit }: MessageBubblePr
         
         {/* Copy button - ALWAYS visible for assistant messages */}
         {role === "assistant" && (
-          <div className="flex justify-start gap-1.5 mt-2">
-            <button
-              onClick={handleCopy}
-              className={`p-1.5 rounded-md transition-all duration-200 hover:scale-105 bg-secondary hover:bg-secondary/80 ${
-                copied ? 'text-accent' : 'text-muted-foreground'
-              }`}
-              aria-label={copied ? "Copied" : "Copy response"}
-              title="Copy response"
-            >
-              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-            </button>
-          </div>
+          <>
+            <div className="flex justify-start gap-1.5 mt-2">
+              <button
+                onClick={handleCopy}
+                className={`p-1.5 rounded-md transition-all duration-200 hover:scale-105 bg-secondary hover:bg-secondary/80 ${
+                  copied ? 'text-accent' : 'text-muted-foreground'
+                }`}
+                aria-label={copied ? "Copied" : "Copy response"}
+                title="Copy response"
+              >
+                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+              </button>
+            </div>
+            <FeedbackButtons selected={feedback} disabled={!!feedback} onSelect={handleFeedback} />
+          </>
         )}
       </div>
     </div>
