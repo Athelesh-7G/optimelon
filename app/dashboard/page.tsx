@@ -1,7 +1,43 @@
-import { getTelemetry } from "@/lib/telemetry"
+"use client"
+
+import React, { useEffect, useState } from "react"
+
+type TelemetryRecord = {
+  id: string
+  timestamp: number
+  intent?: string
+  composite: boolean
+  modelsUsed: string[]
+  totalDuration: number
+}
 
 export default function DashboardPage() {
-  const data = getTelemetry()
+  const [data, setData] = useState<TelemetryRecord[]>([])
+
+  useEffect(() => {
+    let active = true
+
+    const loadTelemetry = async () => {
+      try {
+        const response = await fetch("/api/telemetry")
+        if (!response.ok) return
+        const payload = await response.json()
+        if (active) {
+          setData(Array.isArray(payload) ? payload : payload.data ?? [])
+        }
+      } catch {
+        // ignore fetch errors for now
+      }
+    }
+
+    loadTelemetry()
+    const interval = setInterval(loadTelemetry, 2000)
+
+    return () => {
+      active = false
+      clearInterval(interval)
+    }
+  }, [])
 
   const totalRequests = data.length
   const compositeCount = data.filter((entry) => entry.composite).length
