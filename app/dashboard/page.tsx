@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
+import Link from "next/link"
 import { DeveloperPanel } from "@/components/melonscope/DeveloperPanel"
 import { UserAnalyticsPanel } from "@/components/melonscope/UserAnalyticsPanel"
 
@@ -70,6 +71,12 @@ export default function DashboardPage() {
 
   return (
     <div className="melon-scope-container">
+      <Link
+        href="/"
+        className="inline-flex items-center text-xs text-muted-foreground hover:text-foreground"
+      >
+        ← Back to chat
+      </Link>
       <h1 className="melon-title">🍉 MelonScope</h1>
       <p className="melon-subtitle">
         Real-time intelligence into your AI intelligence
