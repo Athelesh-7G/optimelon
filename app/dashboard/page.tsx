@@ -39,37 +39,32 @@ export default function DashboardPage() {
       }
     }
 
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && "EventSource" in window) {
       eventSource = new EventSource("/api/telemetry/stream")
       eventSource.onmessage = (event) => {
-        if (!active) return
         try {
-          const payload = JSON.parse(event.data)
-          setData(Array.isArray(payload) ? payload : payload.data ?? [])
+          const record = JSON.parse(event.data) as TelemetryRecord
+          if (!active) return
+          setData((prev) => [record, ...prev].slice(0, 100))
         } catch {
-          // ignore malformed events
+          // ignore parse errors
         }
       }
       eventSource.onerror = () => {
-        if (eventSource) {
-          eventSource.close()
-          eventSource = null
-        }
+        eventSource?.close()
+        eventSource = null
+        loadTelemetry()
       }
+    } else {
+      loadTelemetry()
     }
 
-    if (!eventSource) {
-      loadTelemetry()
-      const interval = setInterval(loadTelemetry, 2000)
-      return () => {
-        active = false
-        clearInterval(interval)
-      }
-    }
+    const interval = setInterval(loadTelemetry, 5000)
 
     return () => {
       active = false
       eventSource?.close()
+      clearInterval(interval)
     }
   }, [])
 

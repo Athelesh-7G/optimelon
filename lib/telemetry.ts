@@ -17,34 +17,41 @@ export type TelemetryRecord = {
 
 const globalStore = globalThis as typeof globalThis & {
   __melonScopeTelemetry?: TelemetryRecord[]
+  __melonScopeTelemetrySubscribers?: Set<(record: TelemetryRecord) => void>
 }
 
 const telemetryStore: TelemetryRecord[] =
   globalStore.__melonScopeTelemetry ?? []
+const telemetrySubscribers: Set<(record: TelemetryRecord) => void> =
+  globalStore.__melonScopeTelemetrySubscribers ?? new Set()
 
 if (!globalStore.__melonScopeTelemetry) {
   globalStore.__melonScopeTelemetry = telemetryStore
 }
-
-const telemetrySubscribers = new Set<(records: TelemetryRecord[]) => void>()
+if (!globalStore.__melonScopeTelemetrySubscribers) {
+  globalStore.__melonScopeTelemetrySubscribers = telemetrySubscribers
+}
 
 export function recordTelemetry(record: TelemetryRecord) {
   telemetryStore.unshift(record)
   if (telemetryStore.length > 100) {
     telemetryStore.pop()
   }
-  telemetrySubscribers.forEach((notify) => notify([...telemetryStore]))
+  telemetrySubscribers.forEach((subscriber) => {
+    subscriber(record)
+  })
 }
 
 export function getTelemetry() {
   return telemetryStore
 }
 
-export function subscribeTelemetry(subscriber: (records: TelemetryRecord[]) => void) {
-  telemetrySubscribers.add(subscriber)
-  subscriber([...telemetryStore])
+export function subscribeTelemetry(
+  handler: (record: TelemetryRecord) => void
+) {
+  telemetrySubscribers.add(handler)
   return () => {
-    telemetrySubscribers.delete(subscriber)
+    telemetrySubscribers.delete(handler)
   }
 }
 
