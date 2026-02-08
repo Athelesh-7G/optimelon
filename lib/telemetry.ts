@@ -15,7 +15,16 @@ export type TelemetryRecord = {
   error?: boolean;
 }
 
-const telemetryStore: TelemetryRecord[] = []
+const globalStore = globalThis as typeof globalThis & {
+  __melonScopeTelemetry?: TelemetryRecord[]
+}
+
+const telemetryStore: TelemetryRecord[] =
+  globalStore.__melonScopeTelemetry ?? []
+
+if (!globalStore.__melonScopeTelemetry) {
+  globalStore.__melonScopeTelemetry = telemetryStore
+}
 
 export function recordTelemetry(record: TelemetryRecord) {
   telemetryStore.unshift(record)
