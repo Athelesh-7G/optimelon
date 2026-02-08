@@ -3,6 +3,9 @@ export interface StoredMessage {
   role: "user" | "assistant"
   content: string
   timestamp: number
+  feedback?: "up" | "down"
+  modelUsed?: string
+  routingConfidence?: number
 }
 
 export type Provider =
