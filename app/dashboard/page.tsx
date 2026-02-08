@@ -24,6 +24,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let active = true
+    let eventSource: EventSource | null = null
 
     const loadTelemetry = async () => {
       try {
@@ -38,12 +39,37 @@ export default function DashboardPage() {
       }
     }
 
-    loadTelemetry()
-    const interval = setInterval(loadTelemetry, 2000)
+    if (typeof window !== "undefined") {
+      eventSource = new EventSource("/api/telemetry/stream")
+      eventSource.onmessage = (event) => {
+        if (!active) return
+        try {
+          const payload = JSON.parse(event.data)
+          setData(Array.isArray(payload) ? payload : payload.data ?? [])
+        } catch {
+          // ignore malformed events
+        }
+      }
+      eventSource.onerror = () => {
+        if (eventSource) {
+          eventSource.close()
+          eventSource = null
+        }
+      }
+    }
+
+    if (!eventSource) {
+      loadTelemetry()
+      const interval = setInterval(loadTelemetry, 2000)
+      return () => {
+        active = false
+        clearInterval(interval)
+      }
+    }
 
     return () => {
       active = false
-      clearInterval(interval)
+      eventSource?.close()
     }
   }, [])
 

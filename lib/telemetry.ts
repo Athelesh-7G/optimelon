@@ -26,15 +26,26 @@ if (!globalStore.__melonScopeTelemetry) {
   globalStore.__melonScopeTelemetry = telemetryStore
 }
 
+const telemetrySubscribers = new Set<(records: TelemetryRecord[]) => void>()
+
 export function recordTelemetry(record: TelemetryRecord) {
   telemetryStore.unshift(record)
   if (telemetryStore.length > 100) {
     telemetryStore.pop()
   }
+  telemetrySubscribers.forEach((notify) => notify([...telemetryStore]))
 }
 
 export function getTelemetry() {
   return telemetryStore
+}
+
+export function subscribeTelemetry(subscriber: (records: TelemetryRecord[]) => void) {
+  telemetrySubscribers.add(subscriber)
+  subscriber([...telemetryStore])
+  return () => {
+    telemetrySubscribers.delete(subscriber)
+  }
 }
 
 export function getModelUsageStats() {
