@@ -1,4 +1,5 @@
 import { sendMessage, type Provider, type ProviderClient, type Message, type ChatParams } from "@/lib/providers"
+import { getAdaptiveModel } from "@/lib/adaptiveRouter"
 import { recordTelemetry } from "@/lib/telemetry"
 
 const DEFAULT_IMAGE_MODEL = "stabilityai/stable-diffusion-xl-base-1.0"
@@ -24,6 +25,9 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
 
   const composite = isCompositePrompt(lower)
   const intent = composite ? "composite" : "single"
+  const candidateModels = [context.model]
+  const staticModel = context.model
+  const selectedModel = getAdaptiveModel(intent, candidateModels, staticModel)
 
   if (composite && !context.stream) {
     try {
@@ -31,14 +35,14 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
       const textResult = await sendMessage(
         context.provider,
         context.client,
-        context.model,
+        selectedModel,
         buildMessagesWithPrompt(context.messages, currentInput),
         context.params,
         false
       )
       executionTrace.push({
         step: "model",
-        model: context.model,
+        model: selectedModel,
         duration: Date.now() - start1,
       })
 
@@ -100,7 +104,7 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
     const result = await sendMessage(
       context.provider,
       context.client,
-      context.model,
+      selectedModel,
       context.messages,
       context.params,
       context.stream
@@ -108,7 +112,7 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
 
     const executionEntry = {
       step: "model",
-      model: context.model,
+      model: selectedModel,
       duration: Date.now() - singleStart,
     }
 
@@ -117,7 +121,7 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
       timestamp: Date.now(),
       intent,
       composite: false,
-      modelsUsed: [context.model],
+      modelsUsed: [selectedModel],
       totalDuration: Date.now() - totalStart,
       executionTrace: [executionEntry],
       textLength: typeof result === "string" ? result.length : undefined,
@@ -129,7 +133,7 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
   } catch (error) {
     const executionEntry = {
       step: "model",
-      model: context.model,
+      model: selectedModel,
       duration: Date.now() - singleStart,
     }
     recordTelemetry({
@@ -137,7 +141,7 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
       timestamp: Date.now(),
       intent,
       composite: false,
-      modelsUsed: [context.model],
+      modelsUsed: [selectedModel],
       totalDuration: Date.now() - totalStart,
       executionTrace: [executionEntry],
       imageGenerated: false,
