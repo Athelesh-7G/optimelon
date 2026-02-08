@@ -348,11 +348,15 @@ export function ChatWindow() {
       if (e.key === 'Escape' && isLoading) {
         handleStop()
       }
+      if ((e.key === 'r' || e.key === 'R') && e.shiftKey) {
+        e.preventDefault()
+        handleRouteModel()
+      }
     }
     
     window.addEventListener('keydown', handleGlobalKeyDown)
     return () => window.removeEventListener('keydown', handleGlobalKeyDown)
-  }, [isLoading, handleStop])
+  }, [isLoading, handleStop, handleRouteModel])
 
   const handleClearChat = useCallback(() => {
     setMessages([])

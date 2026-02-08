@@ -2,28 +2,29 @@ import { subscribeTelemetry } from "@/lib/telemetry"
 
 export async function GET() {
   const encoder = new TextEncoder()
+  let unsubscribe: (() => void) | null = null
 
   const stream = new ReadableStream({
     start(controller) {
-      const send = (payload: unknown) => {
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(payload)}\n\n`))
+      const send = (record: unknown) => {
+        controller.enqueue(
+          encoder.encode(`data: ${JSON.stringify(record)}\n\n`)
+        )
       }
 
-      const unsubscribe = subscribeTelemetry((records) => {
-        send(records)
-      })
-
-      return () => {
-        unsubscribe()
-        controller.close()
-      }
+      unsubscribe = subscribeTelemetry(send)
+      controller.enqueue(encoder.encode("event: ready\ndata: {}\n\n"))
+    },
+    cancel() {
+      unsubscribe?.()
+      unsubscribe = null
     },
   })
 
   return new Response(stream, {
     headers: {
       "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
+      "Cache-Control": "no-cache, no-transform",
       Connection: "keep-alive",
     },
   })

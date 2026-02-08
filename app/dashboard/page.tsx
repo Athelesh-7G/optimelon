@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
+import Link from "next/link"
 import { DeveloperPanel } from "@/components/melonscope/DeveloperPanel"
 import { UserAnalyticsPanel } from "@/components/melonscope/UserAnalyticsPanel"
 
@@ -39,42 +40,43 @@ export default function DashboardPage() {
       }
     }
 
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && "EventSource" in window) {
       eventSource = new EventSource("/api/telemetry/stream")
       eventSource.onmessage = (event) => {
-        if (!active) return
         try {
-          const payload = JSON.parse(event.data)
-          setData(Array.isArray(payload) ? payload : payload.data ?? [])
+          const record = JSON.parse(event.data) as TelemetryRecord
+          if (!active) return
+          setData((prev) => [record, ...prev].slice(0, 100))
         } catch {
-          // ignore malformed events
+          // ignore parse errors
         }
       }
       eventSource.onerror = () => {
-        if (eventSource) {
-          eventSource.close()
-          eventSource = null
-        }
+        eventSource?.close()
+        eventSource = null
+        loadTelemetry()
       }
+    } else {
+      loadTelemetry()
     }
 
-    if (!eventSource) {
-      loadTelemetry()
-      const interval = setInterval(loadTelemetry, 2000)
-      return () => {
-        active = false
-        clearInterval(interval)
-      }
-    }
+    const interval = setInterval(loadTelemetry, 5000)
 
     return () => {
       active = false
       eventSource?.close()
+      clearInterval(interval)
     }
   }, [])
 
   return (
     <div className="melon-scope-container">
+      <Link
+        href="/"
+        className="inline-flex items-center text-xs text-muted-foreground hover:text-foreground"
+      >
+        ← Back to chat
+      </Link>
       <h1 className="melon-title">🍉 MelonScope</h1>
       <p className="melon-subtitle">
         Real-time intelligence into your AI intelligence
