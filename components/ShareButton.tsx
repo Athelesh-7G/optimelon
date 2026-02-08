@@ -21,12 +21,8 @@ export default function ShareButton({ textToShare, imageUrl }: ShareButtonProps)
           text: textToShare,
           url: window.location.href,
         })
-        console.log("shared via native share", fallbackText)
       } else if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(fallbackText)
-        console.log("copied to clipboard as fallback", fallbackText)
-      } else {
-        console.log("share fallback unavailable")
       }
       setHasShared(true)
       setTimeout(() => setHasShared(false), 1500)
@@ -34,7 +30,6 @@ export default function ShareButton({ textToShare, imageUrl }: ShareButtonProps)
       console.error("share failed", error)
       try {
         await navigator.clipboard.writeText(fallbackText)
-        console.log("copied fallback", fallbackText)
       } catch (fallbackError) {
         console.error("clipboard fallback failed", fallbackError)
       }

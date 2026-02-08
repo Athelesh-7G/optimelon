@@ -14,8 +14,6 @@ interface FeedbackControlsProps {
 
 export default function FeedbackControls({
   messageId,
-  modelUsed,
-  routingConfidence,
   onUpdate,
 }: FeedbackControlsProps) {
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null)
@@ -55,10 +53,9 @@ export default function FeedbackControls({
       const nextValue = feedback === value ? null : value
       setFeedback(nextValue)
       onUpdate?.(messageId, nextValue)
-      console.log({ messageId, modelUsed, routingConfidence, feedbackType: nextValue })
       setTimeout(() => setIsGuarded(false), 0)
     },
-    [feedback, isGuarded, messageId, modelUsed, onUpdate, routingConfidence]
+    [feedback, isGuarded, messageId, onUpdate]
   )
 
   return (
