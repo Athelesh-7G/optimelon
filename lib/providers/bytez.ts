@@ -27,8 +27,6 @@ export async function sendBytezMessage(
   const encodedModel = encodeURIComponent(model)
   const url = `https://api.bytez.com/models/v2/${encodedModel}`
 
-  console.log("[v0] Bytez request URL:", url)
-
   // Bytez uses non-streaming by default - their SDK's model.run() is synchronous
   // We'll always get the full response, then convert to SSE stream for the frontend if needed
   const response = await fetch(url, {
@@ -46,16 +44,12 @@ export async function sendBytezMessage(
     }),
   })
 
-  console.log("[v0] Bytez response status:", response.status)
-
   if (!response.ok) {
     const error = await response.text()
-    console.log("[v0] Bytez error response:", error)
     throw new Error(`Bytez API error: ${response.status} - ${error}`)
   }
 
   const data = await response.json()
-  console.log("[v0] Bytez response data:", JSON.stringify(data).substring(0, 500))
   
   // Handle Bytez response format: { error: null, output: "..." }
   if (data.error) {

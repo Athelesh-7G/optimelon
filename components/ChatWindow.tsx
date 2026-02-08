@@ -2,7 +2,7 @@
 
 import React from "react"
 import { useState, useEffect, useRef, useCallback } from "react"
-import { Send, Sparkles, Square, Code, Pen, Brain, Globe, Sun, Moon, Wand2, Menu } from "lucide-react"
+import { Send, Sparkles, Square, Code, Pen, Brain, Globe, Sun, Moon, Menu } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -13,7 +13,6 @@ import { ChatModelSelector } from "./ChatModelSelector"
 import { FileUpload, type UploadedFile } from "./FileUpload"
 import { DEFAULT_SYSTEM_PROMPT, buildMessages } from "@/lib/promptTemplate"
 import { DEFAULT_MODEL_ID, getModelDisplayName, getModelById } from "@/lib/models"
-import { getRoutingRecommendation, type RoutingResult } from "@/lib/intentRouting"
 import {
   saveMessages,
   loadMessages,
@@ -60,8 +59,6 @@ export function ChatWindow() {
   const [streaming, setStreaming] = useState(true)
   const [systemPrompt, setSystemPrompt] = useState<string | null>(DEFAULT_SYSTEM_PROMPT)
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [routingNotice, setRoutingNotice] = useState<RoutingResult | null>(null)
-  const [routingModeActive, setRoutingModeActive] = useState(false)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -116,8 +113,6 @@ export function ChatWindow() {
 
   const handleModelChange = useCallback((modelId: string) => {
     setModel(modelId)
-    setRoutingModeActive(false)
-    setRoutingNotice(null)
   }, [])
 
   useEffect(() => {
@@ -133,9 +128,31 @@ export function ChatWindow() {
     setIsLoading(false)
   }, [])
 
+  const handleFeedback = useCallback(
+    ({ messageId, feedbackType, modelUsed, routingConfidence }: {
+      messageId: string
+      feedbackType: "up" | "down"
+      modelUsed?: string
+      routingConfidence?: number
+    }) => {
+      let didUpdate = false
+      setMessages((prev) =>
+        prev.map((message) => {
+          if (message.id === messageId && !message.feedback) {
+            didUpdate = true
+            return { ...message, feedback: feedbackType }
+          }
+          return message
+        })
+      )
+      void modelUsed
+      void routingConfidence
+    },
+    []
+  )
+
   const sendMessage = useCallback(async () => {
     if ((!input.trim() && uploadedFiles.length === 0) || isLoading) return
-
     // Build message content without injecting file names into the user prompt
     const messageContent = input.trim()
 
@@ -164,8 +181,6 @@ export function ChatWindow() {
     setInput("")
     setUploadedFiles([]) // Clear files after sending
     setError(null)
-    setRoutingModeActive(false)
-    setRoutingNotice(null)
     setIsLoading(true)
 
     const assistantId = crypto.randomUUID()
@@ -218,7 +233,13 @@ export function ChatWindow() {
 
         setMessages((prev) => [
           ...prev,
-          { id: assistantId, role: "assistant", content: "", timestamp: Date.now() },
+          {
+            id: assistantId,
+            role: "assistant",
+            content: "",
+            timestamp: Date.now(),
+            modelUsed: model,
+          },
         ])
 
         while (true) {
@@ -271,6 +292,8 @@ export function ChatWindow() {
             role: "assistant",
             content: assistantContent,
             timestamp: Date.now(),
+            modelUsed: model,
+            routingConfidence: routingSnapshot?.confidence,
           },
         ])
       }
@@ -284,7 +307,17 @@ export function ChatWindow() {
       setIsLoading(false)
       abortControllerRef.current = null
     }
-  }, [input, messages, provider, model, temperature, streaming, systemPrompt, isLoading, uploadedFiles])
+  }, [
+    input,
+    messages,
+    provider,
+    model,
+    temperature,
+    streaming,
+    systemPrompt,
+    isLoading,
+    uploadedFiles,
+  ])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -381,21 +414,9 @@ export function ChatWindow() {
     textareaRef.current?.focus()
   }, [])
 
-  const handleRouteModel = useCallback(() => {
-    const prompt = input.trim()
-    if (!prompt) return
-    const result = getRoutingRecommendation(prompt)
-    setModel(result.modelId)
-    setRoutingNotice(result)
-    setRoutingModeActive(true)
-  }, [input])
-
   const handleQuickAction = useCallback((prompt: string) => {
     setInput(prompt)
-    const result = getRoutingRecommendation(prompt)
-    setModel(result.modelId)
-    setRoutingNotice(result)
-    setRoutingModeActive(true)
+    textareaRef.current?.focus()
   }, [])
 
   // Initialize with a new chat
@@ -518,7 +539,12 @@ export function ChatWindow() {
                   key={message.id}
                   role={message.role}
                   content={message.content}
+                  messageId={message.id}
+                  feedback={message.feedback}
+                  modelUsed={message.modelUsed}
+                  routingConfidence={message.routingConfidence}
                   onEdit={message.role === "user" ? handleEditMessage : undefined}
+                  onFeedback={message.role === "assistant" ? handleFeedback : undefined}
                 />
               ))}
               {isLoading && messages[messages.length - 1]?.role === "user" && (
@@ -574,25 +600,6 @@ export function ChatWindow() {
             </div>
           )}
 
-          {routingNotice && (
-            <div className="mb-2 rounded-xl border border-border bg-card/80 px-3 py-2 text-xs text-muted-foreground flex items-center gap-2 justify-between">
-              <div>
-                <span className="font-semibold text-foreground">Routed for {routingNotice.intentLabel}</span>
-                <span className="ml-2 text-[10px] text-muted-foreground">Confidence {routingNotice.confidence}%</span>
-              </div>
-              <button
-                type="button"
-                className="text-[10px] text-primary hover:underline"
-                onClick={() => {
-                  setRoutingNotice(null)
-                  setRoutingModeActive(false)
-                }}
-              >
-                Dismiss
-              </button>
-            </div>
-          )}
-
           <div className="flex gap-2.5 items-end">
             <div className="flex-1 relative">
               <Textarea
@@ -622,29 +629,15 @@ export function ChatWindow() {
                 <Square className="h-4 w-4 fill-current" />
               </Button>
             ) : (
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={handleRouteModel}
-                  disabled={!input.trim()}
-                  size="icon"
-                  className={`h-[52px] w-[52px] rounded-xl transition-all duration-200 border flex-shrink-0 ${
-                    routingModeActive ? "bg-primary/10 border-primary text-primary" : "bg-secondary"
-                  }`}
-                  title="Route model automatically"
-                  aria-label="Route model automatically"
-                >
-                  <Wand2 className="h-4.5 w-4.5" />
-                </Button>
-                <Button
-                  onClick={sendMessage}
-                  disabled={!input.trim() && uploadedFiles.length === 0}
-                  size="icon"
-                  className="h-[52px] w-[52px] rounded-xl melon-gradient shadow-md hover:scale-105 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 text-white"
-                  style={{ boxShadow: '0 3px 12px var(--melon-red-muted)' }}
-                >
-                  <Send className="h-4.5 w-4.5" />
-                </Button>
-              </div>
+              <Button
+                onClick={sendMessage}
+                disabled={!input.trim() && uploadedFiles.length === 0}
+                size="icon"
+                className="h-[52px] w-[52px] rounded-xl melon-gradient shadow-md hover:scale-105 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 text-white"
+                style={{ boxShadow: '0 3px 12px var(--melon-red-muted)' }}
+              >
+                <Send className="h-4.5 w-4.5" />
+              </Button>
             )}
           </div>
           
