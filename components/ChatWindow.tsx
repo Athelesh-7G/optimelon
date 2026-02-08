@@ -133,8 +133,33 @@ export function ChatWindow() {
     setIsLoading(false)
   }, [])
 
+  const handleFeedback = useCallback(
+    ({ messageId, feedbackType, modelUsed, routingConfidence }: {
+      messageId: string
+      feedbackType: "up" | "down"
+      modelUsed?: string
+      routingConfidence?: number
+    }) => {
+      let didUpdate = false
+      setMessages((prev) =>
+        prev.map((message) => {
+          if (message.id === messageId && !message.feedback) {
+            didUpdate = true
+            return { ...message, feedback: feedbackType }
+          }
+          return message
+        })
+      )
+      if (didUpdate) {
+        console.log({ messageId, modelUsed, routingConfidence, feedbackType })
+      }
+    },
+    []
+  )
+
   const sendMessage = useCallback(async () => {
     if ((!input.trim() && uploadedFiles.length === 0) || isLoading) return
+    const routingSnapshot = routingNotice
 
     // Build message content without injecting file names into the user prompt
     const messageContent = input.trim()
@@ -218,7 +243,14 @@ export function ChatWindow() {
 
         setMessages((prev) => [
           ...prev,
-          { id: assistantId, role: "assistant", content: "", timestamp: Date.now() },
+          {
+            id: assistantId,
+            role: "assistant",
+            content: "",
+            timestamp: Date.now(),
+            modelUsed: model,
+            routingConfidence: routingSnapshot?.confidence,
+          },
         ])
 
         while (true) {
@@ -271,6 +303,8 @@ export function ChatWindow() {
             role: "assistant",
             content: assistantContent,
             timestamp: Date.now(),
+            modelUsed: model,
+            routingConfidence: routingSnapshot?.confidence,
           },
         ])
       }
@@ -284,7 +318,18 @@ export function ChatWindow() {
       setIsLoading(false)
       abortControllerRef.current = null
     }
-  }, [input, messages, provider, model, temperature, streaming, systemPrompt, isLoading, uploadedFiles])
+  }, [
+    input,
+    messages,
+    provider,
+    model,
+    temperature,
+    streaming,
+    systemPrompt,
+    isLoading,
+    uploadedFiles,
+    routingNotice,
+  ])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -303,11 +348,15 @@ export function ChatWindow() {
       if (e.key === 'Escape' && isLoading) {
         handleStop()
       }
+      if ((e.key === 'r' || e.key === 'R') && e.shiftKey) {
+        e.preventDefault()
+        handleRouteModel()
+      }
     }
     
     window.addEventListener('keydown', handleGlobalKeyDown)
     return () => window.removeEventListener('keydown', handleGlobalKeyDown)
-  }, [isLoading, handleStop])
+  }, [isLoading, handleStop, handleRouteModel])
 
   const handleClearChat = useCallback(() => {
     setMessages([])
@@ -518,7 +567,12 @@ export function ChatWindow() {
                   key={message.id}
                   role={message.role}
                   content={message.content}
+                  messageId={message.id}
+                  feedback={message.feedback}
+                  modelUsed={message.modelUsed}
+                  routingConfidence={message.routingConfidence}
                   onEdit={message.role === "user" ? handleEditMessage : undefined}
+                  onFeedback={message.role === "assistant" ? handleFeedback : undefined}
                 />
               ))}
               {isLoading && messages[messages.length - 1]?.role === "user" && (
