@@ -4,6 +4,7 @@ import React from "react"
 import { useState, useCallback, useMemo, useId } from "react"
 import { Check, Copy, User, Pencil } from "lucide-react"
 import { extractCodeBlocks, parseBlockMarkdown } from "@/lib/markdown"
+import FeedbackControls from "./FeedbackControls"
 import { FeedbackButtons } from "./FeedbackButtons"
 
 function ImageAttachment({ altText, imageUrl }: { altText: string; imageUrl: string }) {
@@ -331,6 +332,12 @@ export function MessageBubble({
     onEdit?.(content)
   }, [content, onEdit])
 
+  const handleFeedbackUpdate = useCallback(
+    (targetMessageId: string, feedbackValue: "up" | "down" | null) => {
+      if (!feedbackValue) return
+      onFeedback?.({ messageId: targetMessageId, feedbackType: feedbackValue, modelUsed, routingConfidence })
+    },
+    [modelUsed, onFeedback, routingConfidence]
   const handleFeedback = useCallback(
     (feedbackType: "up" | "down") => {
       if (!messageId || feedback) return
@@ -400,6 +407,19 @@ export function MessageBubble({
         
         {/* Copy button - ALWAYS visible for assistant messages */}
         {role === "assistant" && (
+          <div
+            className="mt-2"
+            data-message-id={messageId ?? id}
+            data-message-content={content}
+            data-message-feedback={feedback ?? ""}
+          >
+            <FeedbackControls
+              messageId={messageId ?? id}
+              modelUsed={modelUsed}
+              routingConfidence={routingConfidence}
+              onUpdate={handleFeedbackUpdate}
+            />
+          </div>
           <>
             <div className="flex justify-start gap-1.5 mt-2">
               <button
