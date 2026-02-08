@@ -1,4 +1,5 @@
 import { sendMessage, type Provider, type ProviderClient, type Message, type ChatParams } from "@/lib/providers"
+import { recordTelemetry } from "@/lib/telemetry"
 
 const DEFAULT_IMAGE_MODEL = "stabilityai/stable-diffusion-xl-base-1.0"
 
@@ -13,14 +14,16 @@ interface OrchestratorContext {
 }
 
 export async function orchestrate(prompt: string, context: OrchestratorContext) {
+  const totalStart = Date.now()
   const lower = prompt.toLowerCase()
 
-  const executionTrace: Array<{ step: string; duration: number }> = []
+  const executionTrace: Array<{ step: string; duration: number; model?: string }> = []
   let currentInput = prompt
   let finalText: string | null = null
   let finalImage: string | null = null
 
   const composite = isCompositePrompt(lower)
+  const intent = composite ? "composite" : "single"
 
   if (composite && !context.stream) {
     try {
@@ -35,6 +38,7 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
       )
       executionTrace.push({
         step: "model",
+        model: context.model,
         duration: Date.now() - start1,
       })
 
@@ -48,7 +52,20 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
       finalImage = await generateImage(finalText, context.imageModel)
       executionTrace.push({
         step: "image",
+        model: context.imageModel || DEFAULT_IMAGE_MODEL,
         duration: Date.now() - start2,
+      })
+
+      recordTelemetry({
+        id: crypto.randomUUID(),
+        timestamp: Date.now(),
+        intent,
+        composite: true,
+        modelsUsed: executionTrace.map((entry) => entry.model).filter(Boolean) as string[],
+        totalDuration: Date.now() - totalStart,
+        executionTrace,
+        textLength: finalText?.length,
+        imageGenerated: !!finalImage,
       })
 
       return {
@@ -65,7 +82,8 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
     }
   }
 
-  return sendMessage(
+  const singleStart = Date.now()
+  const result = await sendMessage(
     context.provider,
     context.client,
     context.model,
@@ -73,6 +91,26 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
     context.params,
     context.stream
   )
+
+  const executionEntry = {
+    step: "model",
+    model: context.model,
+    duration: Date.now() - singleStart,
+  }
+
+  recordTelemetry({
+    id: crypto.randomUUID(),
+    timestamp: Date.now(),
+    intent,
+    composite: false,
+    modelsUsed: [context.model],
+    totalDuration: Date.now() - totalStart,
+    executionTrace: [executionEntry],
+    textLength: typeof result === "string" ? result.length : undefined,
+    imageGenerated: false,
+  })
+
+  return result
 }
 
 function buildMessagesWithPrompt(messages: Message[], prompt: string): Message[] {
