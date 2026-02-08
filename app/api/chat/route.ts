@@ -1,12 +1,12 @@
 import { NextRequest } from "next/server"
 import {
   createProviderClient,
-  sendMessage,
   type Provider,
   type Message,
   type ChatParams,
 } from "@/lib/providers"
 import { buildSystemPrompt } from "@/lib/promptTemplate"
+import { orchestrate } from "@/lib/orchestrator"
 
 interface ChatRequest {
   messages: Message[]
@@ -80,24 +80,27 @@ export async function POST(request: NextRequest) {
       ? messages // User provided their own system message, respect it
       : [{ role: "system", content: systemPrompt }, ...messages]
 
-    if (stream) {
-      const result = await sendMessage(provider, client, model, finalMessages, params, true)
+    const latestUserMessage = [...finalMessages].reverse().find((m) => m.role === "user")?.content ?? ""
+    const result = await orchestrate(latestUserMessage, {
+      provider,
+      client,
+      model,
+      messages: finalMessages,
+      params,
+      stream,
+    })
 
-      if (result instanceof ReadableStream) {
-        return new Response(result, {
-          headers: {
-            "Content-Type": "text/event-stream",
-            "Cache-Control": "no-cache",
-            Connection: "keep-alive",
-          },
-        })
-      }
-
-      return Response.json({ reply: result })
+    if (stream && result instanceof ReadableStream) {
+      return new Response(result, {
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        },
+      })
     }
 
-    const reply = await sendMessage(provider, client, model, finalMessages, params, false)
-    return Response.json({ reply })
+    return Response.json({ reply: result })
   } catch (error) {
     console.error("Chat API error:", error)
     const errorMessage = error instanceof Error ? error.message : "Unknown error"
