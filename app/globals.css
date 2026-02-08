@@ -385,6 +385,35 @@ body {
     padding: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
+
+  .melon-section {
+    margin-top: 50px;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(14px);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .bar-container {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 10px;
+    background: linear-gradient(90deg, #ff5f5f, #ff2f2f);
+  }
+
+  .trace-card {
+    border-left: 3px solid #ff4b4b;
+    padding-left: 12px;
+    margin-top: 10px;
+  }
   
   /* Respect reduced motion preferences */
   @media (prefers-reduced-motion: reduce) {

@@ -17,7 +17,7 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
   const totalStart = Date.now()
   const lower = prompt.toLowerCase()
 
-  const executionTrace: Array<{ step: string; duration: number }> = []
+  const executionTrace: Array<{ step: string; model: string; duration: number }> = []
   let currentInput = prompt
   let finalText: string | null = null
   let finalImage: string | null = null
@@ -66,6 +66,7 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
         executionTrace,
         textLength: finalText?.length,
         imageGenerated: !!finalImage,
+        error: false,
       })
 
       return {
@@ -77,40 +78,73 @@ export async function orchestrate(prompt: string, context: OrchestratorContext) 
         executionTrace,
       }
     } catch (error) {
+      recordTelemetry({
+        id: crypto.randomUUID(),
+        timestamp: Date.now(),
+        intent,
+        composite: true,
+        modelsUsed: executionTrace.map((entry) => entry.model).filter(Boolean),
+        totalDuration: Date.now() - totalStart,
+        executionTrace,
+        textLength: finalText?.length,
+        imageGenerated: !!finalImage,
+        error: true,
+      })
       console.error("Composite orchestration failed:", error)
       throw error
     }
   }
 
   const singleStart = Date.now()
-  const result = await sendMessage(
-    context.provider,
-    context.client,
-    context.model,
-    context.messages,
-    context.params,
-    context.stream
-  )
+  try {
+    const result = await sendMessage(
+      context.provider,
+      context.client,
+      context.model,
+      context.messages,
+      context.params,
+      context.stream
+    )
 
-  const executionEntry = {
-    step: "model",
-    model: context.model,
-    duration: Date.now() - singleStart,
+    const executionEntry = {
+      step: "model",
+      model: context.model,
+      duration: Date.now() - singleStart,
+    }
+
+    recordTelemetry({
+      id: crypto.randomUUID(),
+      timestamp: Date.now(),
+      intent,
+      composite: false,
+      modelsUsed: [context.model],
+      totalDuration: Date.now() - totalStart,
+      executionTrace: [executionEntry],
+      textLength: typeof result === "string" ? result.length : undefined,
+      imageGenerated: false,
+      error: false,
+    })
+
+    return result
+  } catch (error) {
+    const executionEntry = {
+      step: "model",
+      model: context.model,
+      duration: Date.now() - singleStart,
+    }
+    recordTelemetry({
+      id: crypto.randomUUID(),
+      timestamp: Date.now(),
+      intent,
+      composite: false,
+      modelsUsed: [context.model],
+      totalDuration: Date.now() - totalStart,
+      executionTrace: [executionEntry],
+      imageGenerated: false,
+      error: true,
+    })
+    throw error
   }
-
-  recordTelemetry({
-    id: crypto.randomUUID(),
-    timestamp: Date.now(),
-    intent,
-    composite: false,
-    modelsUsed: [context.model],
-    totalDuration: Date.now() - totalStart,
-    executionTrace: [executionEntry],
-    textLength: typeof result === "string" ? result.length : undefined,
-    imageGenerated: false,
-  })
-
-  return result
 }
 
 function buildMessagesWithPrompt(messages: Message[], prompt: string): Message[] {
