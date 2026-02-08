@@ -5,6 +5,7 @@ import { useState, useCallback, useMemo, useId } from "react"
 import { Check, Copy, User, Pencil } from "lucide-react"
 import { extractCodeBlocks, parseBlockMarkdown } from "@/lib/markdown"
 import FeedbackControls from "./FeedbackControls"
+import { FeedbackButtons } from "./FeedbackButtons"
 
 function ImageAttachment({ altText, imageUrl }: { altText: string; imageUrl: string }) {
   const downloadImage = async (format: "png" | "jpeg" | "webp" | "original") => {
@@ -337,6 +338,12 @@ export function MessageBubble({
       onFeedback?.({ messageId: targetMessageId, feedbackType: feedbackValue, modelUsed, routingConfidence })
     },
     [modelUsed, onFeedback, routingConfidence]
+  const handleFeedback = useCallback(
+    (feedbackType: "up" | "down") => {
+      if (!messageId || feedback) return
+      onFeedback?.({ messageId, feedbackType, modelUsed, routingConfidence })
+    },
+    [feedback, messageId, modelUsed, onFeedback, routingConfidence]
   )
 
   return (
@@ -413,6 +420,21 @@ export function MessageBubble({
               onUpdate={handleFeedbackUpdate}
             />
           </div>
+          <>
+            <div className="flex justify-start gap-1.5 mt-2">
+              <button
+                onClick={handleCopy}
+                className={`p-1.5 rounded-md transition-all duration-200 hover:scale-105 bg-secondary hover:bg-secondary/80 ${
+                  copied ? 'text-accent' : 'text-muted-foreground'
+                }`}
+                aria-label={copied ? "Copied" : "Copy response"}
+                title="Copy response"
+              >
+                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+              </button>
+            </div>
+            <FeedbackButtons selected={feedback} disabled={!!feedback} onSelect={handleFeedback} />
+          </>
         )}
       </div>
     </div>
