@@ -8,49 +8,8 @@ import {
 import { buildSystemPrompt } from "@/lib/promptTemplate"
 import { orchestrate } from "@/lib/orchestrator"
 
-interface ChatRequest {
-  messages: Message[]
-  provider: Provider
-  model: string
-  params: ChatParams
-  stream?: boolean
-}
-
-const VALID_PROVIDERS = [
-  "bytez",
-  "openai",
-  "claude",
-  "gemini",
-  "moonshot",
-  "deepseek",
-  "groq",
-  "together",
-]
-
-// Map provider to env var names
-const PROVIDER_ENV_KEYS: Record<string, string> = {
-  bytez: "BYTEZ_API_KEY",
-  openai: "OPENAI_API_KEY",
-  claude: "ANTHROPIC_API_KEY",
-  gemini: "GEMINI_API_KEY",
-  moonshot: "MOONSHOT_API_KEY",
-  deepseek: "DEEPSEEK_API_KEY",
-  groq: "GROQ_API_KEY",
-  together: "TOGETHER_API_KEY",
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const body: ChatRequest = await request.json()
-    const { messages, provider, model, params, stream = false } = body
-
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return Response.json({ error: "Messages are required" }, { status: 400 })
-    }
-
-    if (!provider || !VALID_PROVIDERS.includes(provider)) {
-      return Response.json({ error: "Invalid provider" }, { status: 400 })
-    }
+export async function GET() {
+  const encoder = new TextEncoder()
 
     if (!model || typeof model !== "string") {
       return Response.json({ error: "Model is required" }, { status: 400 })
